@@ -145,7 +145,8 @@ function ligarAlvos(area, spec) {
  *         rotulos?: true, rotuloGrupo?(i): texto em destaque sobre o grupo }
  */
 function colunas(W, spec) {
-  const H = spec.altura || 280;
+  // a altura acompanha a largura (tela larga não achata o gráfico), dentro de um limite legível
+  const H = spec.altura || Math.round(Math.min(420, Math.max(250, W * 0.36)));
   const fmtR = spec.fmtRotulo || spec.fmtEixo;
   const rotular = spec.rotulos !== false && !spec.rotuloGrupo;
   const m = { t: 10, r: 8, b: 28, l: 58 };
@@ -203,7 +204,7 @@ function colunas(W, spec) {
  * spec: { categorias, series: [{nome, valores, cor}], fmtEixo, fmtRotulo?, area? }
  */
 function linha(W, spec) {
-  const H = spec.altura || 250;
+  const H = spec.altura || Math.round(Math.min(380, Math.max(230, W * 0.38)));
   const fmtR = spec.fmtRotulo || spec.fmtEixo;
   const m = { t: 22, r: 18, b: 28, l: 58 };
   const pw = W - m.l - m.r, ph = H - m.t - m.b;

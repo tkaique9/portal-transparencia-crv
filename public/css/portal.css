@@ -109,7 +109,8 @@ header.topbar { position: sticky; top: 0; z-index: 50; background: color-mix(in 
 .busca-topo button { background: none; border: 0; color: var(--grey); padding: 0 12px; cursor: pointer; display: grid; place-items: center; }
 .busca-topo:focus-within { border-color: var(--leaf); box-shadow: 0 0 0 3px color-mix(in srgb, var(--leaf) 22%, transparent); }
 
-main { width: 100%; max-width: 1480px; margin: 0 auto; padding: 24px 28px 56px; outline: none; flex: 1; }
+/* a tela inteira: sem largura máxima; a margem cresce com o monitor */
+main { width: 100%; max-width: none; margin: 0; padding: clamp(14px, 1.5vw, 32px) clamp(12px, 1.8vw, 40px) 56px; outline: none; flex: 1; }
 .faixa-exemplo { background: var(--warn-bg); color: var(--warn); border-bottom: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); padding: 6px 28px; font-size: 12.5px; }
 .rodape { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; padding: 16px 28px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--grey); }
 .rodape nav { display: flex; flex-wrap: wrap; gap: 6px 16px; }
@@ -177,12 +178,25 @@ main { width: 100%; max-width: 1480px; margin: 0 auto; padding: 24px 28px 56px; 
 .pergunta:hover::after { transform: translateX(3px); color: var(--leaf); }
 
 /* ---------------- cartões de indicador (KPI) */
-.kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 12px; margin-bottom: 22px; }
-/* tela larga: linhas completas (8 cartões = 4 + 4, nunca 5 + 3); grupos de 5 ou 6 numa linha só */
-@media (min-width: 1200px) {
+.kpis { display: grid; gap: 12px; margin-bottom: 22px; }
+/* Linhas sempre completas, conforme a largura: nunca sobra cartão sozinho.
+   8 cartões: 2 → 4 → 8 por linha; 6: 2 → 3 → 6; 5: 2 → 5; 4: 2 → 4. */
+.kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 520px) { .kpis { grid-template-columns: 1fr; } }
+/* duas colunas com número ímpar de cartões: o último ocupa a linha inteira, sem sobrar vão */
+@media (min-width: 521px) and (max-width: 1099px) { .kpis > .kpi:last-child:nth-child(odd) { grid-column: 1 / -1; } }
+@media (min-width: 1100px) {
   .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .kpis:has(> :nth-child(5):last-child) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .kpis:has(> :nth-child(6):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .kpis:has(> :nth-child(3):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1700px) {
+  .kpis:has(> :nth-child(6):last-child) { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (min-width: 2000px) {
+  .kpis:has(> :nth-child(8):last-child) { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .perguntas { grid-template-columns: repeat(8, minmax(0, 1fr)); }
 }
 .kpi { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px 12px; box-shadow: var(--sombra); min-width: 0; position: relative; overflow: hidden; }
 .kpi::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--kpi-cor, var(--line-strong)); }

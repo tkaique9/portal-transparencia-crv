@@ -110,7 +110,7 @@ export async function render(main, rota) {
 
   const vazio = !serie.chaves.length || (!ind.recebido && !ind.aplicado) ? 'Sem lançamentos publicados no período.' : null;
   montarGrafico(main.querySelector('#g-recdes'), {
-    tipo: 'colunas', titulo: 'Receitas e despesas por mês', vazio, categorias: cats, altura: 300,
+    tipo: 'colunas', titulo: 'Receitas e despesas por mês', vazio, categorias: cats,
     series: [{ nome: 'Receitas', valores: serie.receitas, cor: COR.receita }, { nome: 'Despesas', valores: serie.despesas, cor: COR.despesa }],
     legenda: [{ nome: 'Receitas', cor: COR.receita, valor: fmtMoedaCurta(ind.recebido) }, { nome: 'Despesas', cor: COR.despesa, valor: fmtMoedaCurta(ind.aplicado) }],
     fmtEixo: fmtMoedaCurta, fmtRotulo: fmtRotuloMoeda,
