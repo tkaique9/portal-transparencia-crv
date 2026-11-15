@@ -1,10 +1,16 @@
 /* Portal de Transparência — Instituto CRV
    Linguagem visual do SIGA (app de disponibilidade da frota): mesmos tokens,
-   menu lateral, barra superior e banner. Fontes: as do SIGA quando instaladas,
-   senão as do sistema — o portal não carrega fonte de terceiros (LGPD).
+   menu lateral, barra superior e banner. Fontes: as mesmas do SIGA, hospedadas
+   no próprio portal (css/fontes, cópia de static/siga/fontes) — nenhuma fonte
+   vem de terceiro, então o visitante não é enviado ao Google (LGPD).
    Cores de série dos gráficos seguem a paleta categórica validada (ordem
    fixa, nunca ciclada); cores de status são reservadas e sempre vêm com texto
    ou seta, nunca sozinhas. */
+
+/* Inter e Barlow Condensed: SIL Open Font License 1.1 (redistribuição livre). Declaradas como no SIGA (static/siga/chapa.css). */
+@font-face { font-family: "SIGA Inter"; src: url(fontes/inter-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "SIGA Barlow"; src: url(fontes/barlow-condensed-latin-600-normal.woff2) format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "SIGA Barlow"; src: url(fontes/barlow-condensed-latin-700-normal.woff2) format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
 
 :root {
   color-scheme: light;
@@ -16,8 +22,8 @@
   --ok-bg: rgba(46,133,64,.12); --warn-bg: rgba(201,138,18,.15); --bad-bg: rgba(184,57,43,.11); --info-bg: rgba(47,111,178,.10);
   --side: #0F2035; --side-ink: #DCE6D8; --side-mute: #8DA1B8; --side-hover: rgba(255,255,255,.06);
   --side-on: #3E72AC; --side-on-light: #6FA0D8;
-  --f-display: "Barlow Semi Condensed", "Arial Narrow", "Roboto Condensed", "Segoe UI", system-ui, sans-serif;
-  --f-body: "IBM Plex Sans", "Segoe UI", -apple-system, Roboto, Arial, sans-serif;
+  --f-display: "SIGA Barlow", "Barlow Condensed", "Arial Narrow", "SIGA Inter", sans-serif;
+  --f-body: "SIGA Inter", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --r: 10px; --r-sm: 6px; --side-w: 272px; --side-trilho: 60px;
   --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #e34948;
   --trilha: #E3E8F0; --grade: #E8ECF2;
