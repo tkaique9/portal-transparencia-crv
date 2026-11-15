@@ -1,0 +1,12 @@
+{
+  "name": "portal-transparencia-crv",
+  "version": "0.1.0",
+  "description": "Portal de Transparência do Instituto CRV — versão local (dados no navegador)",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node servidor.js",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
