@@ -14,6 +14,10 @@ import { CATEGORIAS_DESPESA } from './esquema.js';
 import { documentoVazio, salvarBlob } from './db.js';
 import { iniciarPDF, rodapePDF, tabelaPDF } from '../export/exportar.js';
 import { porChave } from '../calculo.js';
+import { ilustracao } from './ilustracoes.js';
+
+/** Sobe quando a carga muda de forma visível (ex.: ilustrações novas). Base só de exemplo é regerada. */
+export const VERSAO_EXEMPLO = 2;
 
 const ULTIMO_MES = '2026-10'; // lançamentos até outubro de 2026
 const SEMENTE = 20261115;
@@ -126,6 +130,7 @@ export async function gerarExemplo(aoProgresso = () => {}) {
 
   const doc = documentoVazio();
   doc.config.demonstracao = true;
+  doc.config.versaoExemplo = VERSAO_EXEMPLO;
   const C = doc.colecoes;
   const agora = new Date().toISOString();
   const meta = (extra = {}) => ({ exemplo: true, publicacao: 'publicado', criadoEm: agora, criadoPor: 'carga-de-exemplo', atualizadoEm: agora, atualizadoPor: 'carga-de-exemplo', publicadoEm: agora, publicadoPor: 'carga-de-exemplo', ...extra });
@@ -365,39 +370,6 @@ async function gerarDocumentos(doc, { PR, P, CT }) {
 
 // ------------------------------------------------------------ fotos
 
-const CORES_AREA = {
-  'Educação': ['#2a78d6', '#86b6ef'], 'Saúde e bem-estar': ['#1baf7a', '#9fe0c6'], 'Meio ambiente': ['#008300', '#9bd39b'],
-  'Geração de renda': ['#eda100', '#f6d68a'], 'Cultura e esporte': ['#eb6834', '#f5b79c'], 'Assistência social': ['#6250d6', '#b9b0f0'],
-};
-
-/** Ilustração em PNG desenhada no canvas — não é foto real, e diz isso nela. */
-async function ilustracao(area, legenda, variante) {
-  const W = 960, H = 600;
-  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-  const g = cv.getContext('2d');
-  const [forte, claro] = CORES_AREA[area] || ['#2a57a0', '#a9c1e6'];
-  const ceu = g.createLinearGradient(0, 0, 0, H); ceu.addColorStop(0, claro); ceu.addColorStop(1, '#ffffff');
-  g.fillStyle = ceu; g.fillRect(0, 0, W, H);
-  g.fillStyle = 'rgba(255,255,255,.85)'; g.beginPath(); g.arc(170 + variante * 420, 140, 62, 0, Math.PI * 2); g.fill();
-  for (let i = 0; i < 3; i++) {
-    g.fillStyle = i === 2 ? forte : `${forte}${['55', '99'][i]}`;
-    g.beginPath(); g.moveTo(0, H);
-    for (let x = 0; x <= W; x += 24) g.lineTo(x, H * (0.55 + i * 0.1) + Math.sin(x / (150 + i * 60) + variante * 2 + i) * (40 - i * 10));
-    g.lineTo(W, H); g.closePath(); g.fill();
-  }
-  // pessoas estilizadas
-  g.fillStyle = '#14325c';
-  for (let i = 0; i < 5; i++) {
-    const x = 260 + i * 105 + variante * 30, y = H * 0.74 - (i % 2) * 12, s = 1 - (i % 3) * 0.12;
-    g.beginPath(); g.arc(x, y - 70 * s, 16 * s, 0, Math.PI * 2); g.fill();
-    g.beginPath(); g.roundRect(x - 18 * s, y - 50 * s, 36 * s, 62 * s, 12 * s); g.fill();
-  }
-  g.fillStyle = 'rgba(20,50,92,.82)'; g.fillRect(0, H - 64, W, 64);
-  g.fillStyle = '#fff'; g.font = 'bold 26px system-ui, sans-serif'; g.fillText(legenda, 28, H - 26);
-  g.fillStyle = '#ffd765'; g.font = 'bold 18px system-ui, sans-serif'; g.textAlign = 'right'; g.fillText('IMAGEM ILUSTRATIVA — EXEMPLO', W - 28, H - 28);
-  return new Promise(ok => cv.toBlob(ok, 'image/png'));
-}
-
 async function gerarFotos(doc, PR) {
   const agora = new Date().toISOString();
   const LEGENDAS = {
@@ -408,8 +380,8 @@ async function gerarFotos(doc, PR) {
   for (const [k, legendas] of Object.entries(LEGENDAS)) {
     const p = PR[k];
     for (let i = 0; i < legendas.length; i++) {
-      const blob = await ilustracao(p.area, legendas[i], i);
-      const arquivo = await salvarBlob(blob, `${k}-${i + 1}.png`);
+      const blob = await ilustracao(`${k}-${i + 1}`, legendas[i], SEMENTE + i * 97 + k.length);
+      const arquivo = await salvarBlob(blob, `${k}-${i + 1}.jpg`);
       doc.colecoes.documentos.push({ id: novoId('doc-'), titulo: `${legendas[i]} — ${p.nome}`, categoria: 'Fotografia', exercicio: Number(p.inicio.slice(0, 4)), data: p.inicio, projetoId: p.id, descricao: 'Imagem ilustrativa gerada para a demonstração.', arquivo, restrito: false, exemplo: true, publicacao: 'publicado', criadoEm: agora, criadoPor: 'carga-de-exemplo', atualizadoEm: agora, atualizadoPor: 'carga-de-exemplo', publicadoEm: agora, publicadoPor: 'carga-de-exemplo' });
     }
   }

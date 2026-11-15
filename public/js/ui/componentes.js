@@ -113,8 +113,153 @@ export function ligarDocumentos(raiz, docs) {
 
 // ------------------------------------------------------------ indicadores
 
-export function kpi(rotulo, valor, nota = '', { medidor = null, destaque = false } = {}) {
-  return `<div class="kpi${destaque ? ' destaque' : ''}"><div class="rotulo">${esc(rotulo)}</div><div class="valor">${esc(valor)}</div>${nota ? `<div class="nota">${esc(nota)}</div>` : ''}${medidor !== null ? `<div class="medidor" role="img" aria-label="${fmtPct(medidor)}"><i style="width:${Math.min(100, Math.max(0, medidor * 100))}%"></i></div>` : ''}</div>`;
+/**
+ * Variação contra o período anterior. A cor diz se é bom ou ruim — e nunca
+ * sozinha: vai com seta e com o número. sentido: 'sobe' (mais é melhor),
+ * 'desce' (menos é melhor) ou 'neutro' (gasto não é bom nem ruim em si).
+ */
+export function delta(v, rotulo = '', sentido = 'sobe') {
+  if (v === null || v === undefined || !Number.isFinite(v)) return '';
+  const seta = Math.abs(v) < 0.0005 ? '■' : v > 0 ? '▲' : '▼';
+  const cls = sentido === 'neutro' || Math.abs(v) < 0.0005 ? 'neutro' : (v > 0) === (sentido === 'sobe') ? 'bom' : 'ruim';
+  const txt = (v > 0 ? '+' : '') + (v * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%';
+  return `<span class="delta ${cls}" title="${esc(rotulo)}">${seta} ${esc(txt)}${rotulo ? ` <small>${esc(rotulo)}</small>` : ''}</span>`;
+}
+
+/**
+ * Cartão de indicador. op: { medidor (0–1), destaque, cor (faixa lateral),
+ * delta: {v, rotulo, sentido}, mini: SVG de tendência (minigrafico) }
+ */
+export function kpi(rotulo, valor, nota = '', { medidor = null, destaque = false, cor = null, delta: d = null, mini = '' } = {}) {
+  return `<div class="kpi${destaque ? ' destaque' : ''}"${cor ? ` style="--kpi-cor:${cor}"` : ''}>
+    <div class="topo-kpi"><span class="rotulo">${esc(rotulo)}</span></div>
+    <div class="valor-linha"><span class="valor">${esc(valor)}</span>${mini}</div>
+    ${d && Number.isFinite(d.v) ? `<div class="linha-delta">${delta(d.v, d.rotulo, d.sentido)}</div>` : ''}
+    ${nota ? `<div class="nota">${esc(nota)}</div>` : ''}
+    ${medidor !== null ? `<div class="medidor" role="img" aria-label="${fmtPct(medidor)}"><i style="width:${Math.min(100, Math.max(0, medidor * 100))}%"></i></div>` : ''}</div>`;
+}
+
+/** Cor de cada área de atuação (ordem fixa da paleta categórica). */
+export const COR_AREA = {
+  'Educação': 'var(--s1)', 'Cultura e esporte': 'var(--s2)', 'Saúde e bem-estar': 'var(--s3)',
+  'Geração de renda': 'var(--s4)', 'Assistência social': 'var(--s7)', 'Meio ambiente': 'var(--s6)',
+};
+
+// ------------------------------------------------------------ fotos
+
+const urls = new Map();
+/** URL de uma imagem guardada no banco local (reaproveitada entre telas). */
+export async function urlImagem(doc) {
+  if (!doc?.arquivo) return null;
+  if (!urls.has(doc.arquivo.id)) {
+    const a = await lerArquivo(doc.arquivo.id);
+    if (!a) return null;
+    urls.set(doc.arquivo.id, URL.createObjectURL(a.blob));
+  }
+  return urls.get(doc.arquivo.id);
+}
+const PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+const legendaFoto = d => d.titulo.split(' — ')[0];
+
+/**
+ * Carrossel de fotos. Devolve o HTML; ligarCarrosseis() dá vida (setas,
+ * pontos, deslizar no celular e clique que abre a galeria em tela cheia).
+ */
+export function carrossel(fotos, { selos = '', vazio = 'Sem fotos publicadas' } = {}) {
+  if (!fotos.length) return `<div class="carrossel"><div class="vazio" style="height:100%;display:grid;place-items:center">${esc(vazio)}</div>${selos ? `<div class="selos">${selos}</div>` : ''}</div>`;
+  return `<div class="carrossel" data-carrossel="${esc(fotos.map(f => f.id).join(','))}" data-i="0">
+    <div class="trilho">${fotos.map(f => `<img data-foto="${esc(f.id)}" src="${PIXEL}" alt="${esc(legendaFoto(f))}" loading="lazy">`).join('')}</div>
+    ${selos ? `<div class="selos">${selos}</div>` : ''}
+    ${fotos.length > 1 ? `<button class="seta ant" type="button" aria-label="Foto anterior">‹</button><button class="seta prox" type="button" aria-label="Próxima foto">›</button>
+    <div class="pontos">${fotos.map((_, i) => `<button type="button" aria-label="Foto ${i + 1}"${i ? '' : ' class="on"'}></button>`).join('')}</div>
+    <span class="contador">1/${fotos.length}</span>` : ''}
+  </div>`;
+}
+
+function irPara(c, i) {
+  const n = c.querySelectorAll('.trilho img').length;
+  const k = ((i % n) + n) % n;
+  c.dataset.i = k;
+  c.querySelector('.trilho').style.transform = `translateX(-${k * 100}%)`;
+  c.querySelectorAll('.pontos button').forEach((b, j) => b.classList.toggle('on', j === k));
+  const cont = c.querySelector('.contador'); if (cont) cont.textContent = `${k + 1}/${n}`;
+  c.dispatchEvent(new CustomEvent('foto', { detail: k, bubbles: true }));
+}
+
+/** Liga todos os carrosséis dentro de `raiz`. docs = lista onde procurar as fotos por id. */
+export async function ligarCarrosseis(raiz, docs) {
+  const porId = id => docs.find(d => d.id === id);
+  for (const img of raiz.querySelectorAll('img[data-foto]')) {
+    const url = await urlImagem(porId(img.dataset.foto));
+    if (url) img.src = url;
+  }
+  for (const c of raiz.querySelectorAll('[data-carrossel]')) {
+    if (c._ligado) continue;
+    c._ligado = true;
+    const fotos = c.dataset.carrossel.split(',').map(porId).filter(Boolean);
+    c.addEventListener('click', e => {
+      e.preventDefault(); e.stopPropagation();
+      if (e.target.closest('.ant')) return irPara(c, Number(c.dataset.i) - 1);
+      if (e.target.closest('.prox')) return irPara(c, Number(c.dataset.i) + 1);
+      const p = e.target.closest('.pontos button');
+      if (p) return irPara(c, [...p.parentNode.children].indexOf(p));
+      if (e.target.closest('img')) abrirGaleria(fotos, Number(c.dataset.i));
+    });
+    let x0 = null;
+    c.addEventListener('pointerdown', e => { x0 = e.clientX; });
+    c.addEventListener('pointerup', e => {
+      if (x0 !== null && Math.abs(e.clientX - x0) > 40) irPara(c, Number(c.dataset.i) + (e.clientX < x0 ? 1 : -1));
+      x0 = null;
+    });
+  }
+}
+export { irPara as carrosselIr };
+
+/** Galeria em tela cheia: setas, teclado (← → Esc), miniaturas e deslizar. */
+export async function abrirGaleria(fotos, inicio = 0) {
+  if (!fotos.length) return;
+  const anterior = document.activeElement;
+  const el = document.createElement('div');
+  el.className = 'galeria-tela';
+  el.setAttribute('role', 'dialog');
+  el.setAttribute('aria-modal', 'true');
+  el.setAttribute('aria-label', 'Galeria de fotos');
+  const urlsFotos = await Promise.all(fotos.map(urlImagem));
+  el.innerHTML = `
+    <div class="gt-cab"><div><b id="gt-titulo"></b><br><span id="gt-sub"></span></div><button class="fechar" type="button" aria-label="Fechar galeria">×</button></div>
+    <div class="gt-palco">${fotos.length > 1 ? '<button class="gt-seta ant" type="button" aria-label="Foto anterior">‹</button>' : ''}<img id="gt-img" alt=""><span></span>${fotos.length > 1 ? '<button class="gt-seta prox" type="button" aria-label="Próxima foto">›</button>' : ''}</div>
+    <div class="gt-pe">${fotos.map((f, i) => `<button type="button" data-i="${i}" aria-label="${esc(legendaFoto(f))}"><img src="${urlsFotos[i] || PIXEL}" alt=""></button>`).join('')}</div>`;
+  document.body.appendChild(el);
+  document.body.style.overflow = 'hidden';
+  let i = inicio;
+  const mostrar = k => {
+    i = ((k % fotos.length) + fotos.length) % fotos.length;
+    const f = fotos[i];
+    el.querySelector('#gt-img').src = urlsFotos[i] || PIXEL;
+    el.querySelector('#gt-img').alt = legendaFoto(f);
+    el.querySelector('#gt-titulo').textContent = legendaFoto(f);
+    el.querySelector('#gt-sub').textContent = `${i + 1} de ${fotos.length}${f.titulo.includes(' — ') ? ' · ' + f.titulo.split(' — ').slice(1).join(' — ') : ''}${f.descricao ? ' · ' + f.descricao : ''}`;
+    el.querySelectorAll('.gt-pe button').forEach((b, j) => b.classList.toggle('on', j === i));
+  };
+  const fechar = () => { el.remove(); document.body.style.overflow = ''; removeEventListener('keydown', tecla); anterior?.focus?.(); };
+  const tecla = e => {
+    if (e.key === 'Escape') fechar();
+    else if (e.key === 'ArrowRight') mostrar(i + 1);
+    else if (e.key === 'ArrowLeft') mostrar(i - 1);
+  };
+  addEventListener('keydown', tecla);
+  el.addEventListener('click', e => {
+    if (e.target.closest('.fechar') || e.target === el.querySelector('.gt-palco')) return fechar();
+    if (e.target.closest('.gt-seta.ant')) return mostrar(i - 1);
+    if (e.target.closest('.gt-seta.prox')) return mostrar(i + 1);
+    const b = e.target.closest('.gt-pe button');
+    if (b) mostrar(Number(b.dataset.i));
+  });
+  let x0 = null;
+  el.addEventListener('pointerdown', e => { x0 = e.clientX; });
+  el.addEventListener('pointerup', e => { if (x0 !== null && Math.abs(e.clientX - x0) > 50) mostrar(i + (e.clientX < x0 ? 1 : -1)); x0 = null; });
+  mostrar(i);
+  el.querySelector('.fechar').focus();
 }
 
 export function seloPublicacao(estado) {

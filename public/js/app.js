@@ -2,11 +2,12 @@
 // visita, monta a navegação e despacha cada rota para sua página.
 
 import * as db from './dados/db.js';
-import { gerarExemplo } from './dados/exemplo.js';
+import { gerarExemplo, VERSAO_EXEMPLO } from './dados/exemplo.js';
 import { COLECOES } from './dados/esquema.js';
 import { mascararDocumento, fmtDataHora, esc } from './util.js';
 import { $, $$, aviso } from './ui/componentes.js';
 import { anosDisponiveis } from './calculo.js';
+import { iniciarMenu, marcarAtual } from './ui/menu-siga.js';
 
 const PAGINAS = {
   '': () => import('./paginas/inicio.js'),
@@ -64,13 +65,8 @@ async function rotear() {
   const r = lerRota();
   const carregar = PAGINAS[r.pagina];
   const main = $('#conteudo');
-  $$('.menu a').forEach(a => {
-    const alvo = a.getAttribute('href').replace(/^#\/?/, '');
-    a.classList.toggle('ativo', alvo === r.pagina);
-    if (alvo === r.pagina) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
-  });
-  $('#menu').classList.remove('aberto');
-  $('#abrir-menu').setAttribute('aria-expanded', 'false');
+  marcarMenu(r);
+  $('#app').classList.remove('menu-aberto');
   const minha = ++renderizando;
   if (!carregar) {
     main.innerHTML = '<h1>Página não encontrada</h1><p><a href="#/">Voltar para a visão geral</a></p>';
@@ -88,10 +84,34 @@ async function rotear() {
   }
 }
 
+/** Menu lateral (padrão SIGA-MG): tela atual marcada e o caminho "grupo / tela" na barra de cima. */
+const TITULOS_EXTRA = { busca: ['Portal', 'Pesquisa'] };
+function marcarMenu(r) {
+  const atual = marcarAtual(r.pagina);
+  const [grupo, tela] = atual ? [atual.grupo, atual.tela === 'Início / Painel' ? 'Painel' : atual.tela] : TITULOS_EXTRA[r.pagina] || ['Portal', 'Página não encontrada'];
+  $('#crumb-grupo').textContent = grupo;
+  $('#crumb-tela').textContent = tela;
+}
+
 function atualizarRodape() {
   const datas = Object.keys(COLECOES).flatMap(c => db.publicos(c).map(r => r.publicadoEm || r.atualizadoEm)).filter(Boolean).sort();
-  $('#ultima-atualizacao').textContent = datas.length ? `Informações publicadas atualizadas em ${fmtDataHora(datas[datas.length - 1])}.` : '';
-  $('#faixa-exemplo').hidden = !db.dados.config.demonstracao;
+  $('#ultima-atualizacao').innerHTML = datas.length ? `Atualizado em <b>${esc(fmtDataHora(datas[datas.length - 1]))}</b>` : '';
+  const demo = !!db.dados.config.demonstracao;
+  $('#faixa-exemplo').hidden = !demo;
+  $('#chip-exemplo').hidden = !demo;
+  $('#side-status').innerHTML = `Base: <b>${demo ? 'dados de exemplo' : 'dados publicados'}</b>`;
+}
+
+
+/**
+ * Base só com exemplos de uma versão anterior da carga (ilustrações novas,
+ * por exemplo) e ninguém cadastrado: pode regerar sem perder nada. Havendo
+ * usuário ou registro real, não mexe — quem administra decide.
+ */
+function exemploDesatualizado() {
+  const d = db.dados;
+  if (!d?.config.demonstracao || (d.config.versaoExemplo || 1) >= VERSAO_EXEMPLO || d.usuarios.length) return false;
+  return Object.keys(COLECOES).every(c => db.colecao(c).every(r => r.exemplo));
 }
 
 // ------------------------------------------------------------ tema
@@ -112,10 +132,7 @@ async function iniciar() {
     try { localStorage.setItem('crv-tema', novo); } catch { /* sem armazenamento */ }
     rotear();
   };
-  $('#abrir-menu').onclick = () => {
-    const aberto = $('#menu').classList.toggle('aberto');
-    $('#abrir-menu').setAttribute('aria-expanded', String(aberto));
-  };
+  iniciarMenu();
   $('#form-busca').onsubmit = e => {
     e.preventDefault();
     const q = $('#busca-geral').value.trim();
@@ -124,10 +141,11 @@ async function iniciar() {
 
   try {
     const existe = await db.abrir();
-    if (!existe) {
+    if (!existe || exemploDesatualizado()) {
       $('#carregando-msg').textContent = 'Primeiro acesso: preparando os dados de exemplo…';
       const doc = await gerarExemplo(msg => { $('#carregando-msg').textContent = msg; });
       await db.substituir(doc);
+      await db.limparOrfaos(); // arquivos da carga anterior, quando houve regeração
     }
   } catch (e) {
     console.error(e);

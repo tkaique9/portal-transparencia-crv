@@ -99,7 +99,10 @@ public/
       auth.js               login (PBKDF2), sessão, usuários
       exemplo.js            gerador dos dados FICTÍCIOS de demonstração
     export/                 PDF e Excel gerados no navegador, sem biblioteca externa
-    ui/                     componentes (tabela, modal, visor) e gráficos SVG
+    ui/                     componentes (tabela, modal, visor, carrossel, galeria) e gráficos SVG
+    ui/menu-siga.js         menu lateral no padrão SIGA-MG (porta do static/siga/menu.js)
+  css/menu-siga.css         cópia do static/siga/menu.css do SIGA-MG — ao mudar o padrão lá, copie de novo
+  js/dados/ilustracoes.js   ilustrações dos projetos de EXEMPLO (canvas); fotos reais entram pela área restrita
     paginas/                uma por rota
 tests/                      motor de cálculo, PDF e Excel (node --test)
 ```

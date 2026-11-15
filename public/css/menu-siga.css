@@ -1,0 +1,252 @@
+/* Copiado do SIGA-MG (app-disponibilidade-frota/static/siga/menu.css + pílulas de chapa.css), sem alterar regras.
+   Ao mudar o padrão lá, copie de novo. Única adaptação: o fundo da página e as fontes vêm do portal. */
+/* =====================================================================
+   Menu lateral no padrao SIGA-MG (28/10/2026): o mesmo visual do Controle Agricola
+   (modulos/agricola/components/MenuLateral.jsx), desenhado em templates/_menu_siga.html.
+   - Fundo #0B2A47 FIXO nos dois temas: aqui so cores fixas, nenhum token do tema (var(--f-body) e fonte).
+   - Medidas do Agricola: aberto 272 px; recolhido = trilho de 60 px (so os quadrinhos, o nome no title);
+     gaveta no celular (ate 900 px) 300 px / no max. 86vw; quadrinho do icone 36 px raio 10 com icone de 18 px;
+     filete de 3 px no item da tela atual; busca de 36 px.
+   - Cada secao tem uma cor (data-cor): o quadrinho na cor SOLIDA com o icone em #0B2A47 e o titulo da secao em
+     maiusculas na cor. O roxo e o rosa sairam do padrao em 12/11/2026: no lugar deles, lima e caramelo
+     (contraste do icone e do titulo sobre o fundo: lima 8,4:1, caramelo 6,7:1).
+   - O nome da tela e o ultimo texto do link (os testes procuram "Nome</a>"): o subtitulo vem do data-desc num
+     ::after; o nome vai em no maximo 2 linhas e o subtitulo numa so, as duas com reticencias (o title tem o texto
+     inteiro), para nada passar dos 272 px da coluna.
+   ===================================================================== */
+.sg{--sg-fundo:#0B2A47;--sg-icone:#0B2A47;--sg-txt:rgba(255,255,255,.88);--sg-mudo:rgba(255,255,255,.62);
+  --sg-hover:rgba(255,255,255,.07);--sg-ativo:rgba(255,255,255,.12);--sg-borda:rgba(255,255,255,.10);--sg-marca:#1A9760;
+  --sg-hover-opaco:color-mix(in srgb,#FFFFFF 7%,#0B2A47);--sg-ativo-opaco:color-mix(in srgb,#FFFFFF 12%,#0B2A47);
+  --sg-cor:#22B8CF;--sg-rgb:34,184,207;--sg-titulo:#22B8CF}
+.sg [data-cor="verde-agua"]{--sg-cor:#20C997;--sg-rgb:32,201,151;--sg-titulo:#20C997}
+.sg [data-cor="ciano"]{--sg-cor:#22B8CF;--sg-rgb:34,184,207;--sg-titulo:#22B8CF}
+.sg [data-cor="amarelo"]{--sg-cor:#FCC419;--sg-rgb:252,196,25;--sg-titulo:#FCC419}
+.sg [data-cor="laranja"]{--sg-cor:#FF922B;--sg-rgb:255,146,43;--sg-titulo:#FF922B}
+.sg [data-cor="lima"]{--sg-cor:#94D82D;--sg-rgb:148,216,45;--sg-titulo:#94D82D}
+.sg [data-cor="azul"]{--sg-cor:#4DABF7;--sg-rgb:77,171,247;--sg-titulo:#4DABF7}
+.sg [data-cor="caramelo"]{--sg-cor:#D9A66B;--sg-rgb:217,166,107;--sg-titulo:#D9A66B}
+
+/* ---------- a coluna ----------
+   border-box aqui dentro: as Configuracoes nao carregam o app.css (que poe border-box em tudo) e sem ele os itens
+   passavam dos 272 px da coluna (o fim do nome e do subtitulo ficava cortado).
+   --sg-topo: altura da barra de cima quando ela atravessa a pagina por cima do menu (static/siga/barra.css): o menu
+   gruda embaixo dela */
+.sg,.sg *,.sg *::before,.sg *::after{box-sizing:border-box}
+.sidebar.sg{position:sticky;top:var(--sg-topo,0px);height:calc(100vh - var(--sg-topo,0px));height:calc(100dvh - var(--sg-topo,0px));
+  z-index:60;display:flex;flex-direction:column;min-width:0;
+  overflow:hidden;background:#0B2A47;color:var(--sg-txt);font-family:var(--f-body,var(--sd-fonte,"SIGA Inter"),system-ui,sans-serif);
+  -webkit-font-smoothing:antialiased}
+.sg svg{flex:none}
+
+/* marca: logo, nome do sistema e o filete verde do topo (o fechar so aparece na gaveta do celular). Logo branco com a
+   altura do da barra do Inicio: 30 px (22 px no celular) */
+.sg-marca{flex:none;display:flex;align-items:center;gap:10px;padding:14px 10px 12px 14px;border-bottom:3px solid var(--sg-marca)}
+.sg-marca img{height:30px;width:auto;display:block;flex:none}
+@media (max-width:640px){.sg-marca img{height:22px}}
+.sg-marca-txt{min-width:0;flex:1;line-height:1.15}
+.sg-marca .bt{font-family:var(--f-display,var(--sd-fonte-titulo,"SIGA Barlow"),system-ui,sans-serif);font-weight:600;font-size:16px;color:#fff}
+.sg-marca .bs{font-size:11.5px;color:var(--sg-mudo);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sg button{font:inherit;height:auto;padding:0;border:0;background:none;color:inherit;box-shadow:none;transform:none;
+  cursor:pointer;white-space:normal;text-align:left;justify-content:flex-start}
+.sg button:hover{background:var(--sg-hover);border-color:transparent}
+.sg button:active{transform:none}
+.sg button:focus-visible,.sg a:focus-visible,.sg .gl:focus-visible{outline:2px solid rgba(255,255,255,.75);outline-offset:-2px;box-shadow:none}
+.sg .sg-fechar{display:none;width:36px;height:36px;border-radius:9px;place-items:center;color:var(--sg-txt);flex:none}
+.sg .sg-fechar svg{width:18px;height:18px}
+
+/* busca no menu (Ctrl K ou "/") */
+.sg-busca{flex:none;position:relative;display:flex;align-items:center;gap:8px;height:36px;margin:10px 10px 4px;padding:0 8px 0 10px;
+  border-radius:9px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);color:var(--sg-mudo)}
+.sg-busca:focus-within{background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.30);color:rgba(255,255,255,.8)}
+.sg-busca > svg{width:16px;height:16px}
+.sg .sg-busca input{flex:1;min-width:0;height:100%;padding:0;border:0;border-radius:0;background:transparent;color:#fff;
+  font-size:13px;box-shadow:none;outline:none;color-scheme:dark}
+.sg .sg-busca input:hover,.sg .sg-busca input:focus{border:0;box-shadow:none;background:transparent}
+.sg .sg-busca input::placeholder{color:var(--sg-mudo);opacity:1}
+.sg .sg-busca input::-webkit-search-cancel-button{display:none}
+.sg-busca kbd{flex:none;font:600 10px/1 var(--f-body,system-ui,sans-serif);color:var(--sg-mudo);border:1px solid rgba(255,255,255,.16);
+  border-radius:4px;padding:3px 5px;pointer-events:none}
+.sg-busca input:not(:placeholder-shown) ~ kbd{display:none}
+
+/* ---------- lista ---------- */
+.sg nav.menu{flex:1;min-height:0;position:relative;display:block;overflow-y:auto;overflow-x:hidden;padding:6px 8px 12px;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.14) transparent}
+.sg nav.menu:hover{scrollbar-color:rgba(255,255,255,.28) transparent}
+.sg .busca-vazio{padding:10px 8px;font-size:12.5px;color:var(--sg-mudo)}
+.sg .navgroup{display:block;margin-top:10px}
+.sg .navgroup.sg-inicio{margin-top:2px}
+
+/* titulo da secao: MAIUSCULAS na cor; clicar abre e fecha (fechada, mostra quantas telas tem) */
+.sg-sec{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;cursor:pointer;user-select:none}
+.sg-sec:hover{background:rgba(255,255,255,.05)}
+.sg .gl{display:flex;align-items:center;gap:8px;min-width:0;padding:0;font:700 11px/1.2 var(--f-body,system-ui,sans-serif);
+  letter-spacing:.08em;text-transform:uppercase;color:var(--sg-titulo);white-space:nowrap;outline:none;border-radius:4px}
+.sg .gl svg{width:15px;height:15px;color:var(--sg-titulo)}
+.sg-sec::after{content:"";order:1;flex:1;height:1px;min-width:12px;background:linear-gradient(90deg,rgba(var(--sg-rgb),.55),transparent)}
+.sg-sec-n{order:2;display:none;border-radius:999px;background:rgba(255,255,255,.10);padding:0 6px;font-size:10.5px;font-weight:600;
+  line-height:16px;color:rgba(255,255,255,.72)}
+.sg-sec .sg-seta{order:3;width:13px;height:13px;color:rgba(255,255,255,.5);transform:rotate(90deg);transition:transform .15s}
+.sg .navgroup.sg-fechada .sg-sec-n{display:inline-block}
+.sg .navgroup.sg-fechada .sg-sec .sg-seta{transform:none}
+.sg .navgroup.sg-fechada .sg-itens{display:none}
+.sg-itens{display:flex;flex-direction:column;gap:2px;margin-top:2px}
+
+/* tela (1o nivel) e grupo: quadrinho, nome e subtitulo; nome em cima (no maximo 2 linhas, com reticencias), subtitulo
+   (data-desc) embaixo numa linha so, com reticencias; o title (menu.js) leva o texto inteiro.
+   O link e uma caixa de linhas (-webkit-box + line-clamp) porque o nome e o texto solto dele (os testes procuram
+   "Nome</a>" e o menu.js le o texto solto): o quadrinho, o contador, a seta e o subtitulo ficam por cima, em posicao
+   absoluta, e o padding guarda o lugar deles. As linhas que o line-clamp corta continuam pintadas no padding de baixo:
+   a faixa do subtitulo (::after) cobre esse padding com o fundo do item (--sg-fundo-item, opaco: a cor do item ja
+   misturada ao fundo do menu). O grupo (.sg-mod-btn) tem o nome num span e segue em grade. */
+.sg .sg-itens > a,.sg .sg-inicio > a{--sg-dir:8px;--sg-fundo-item:var(--sg-fundo);position:relative;display:-webkit-box;
+  -webkit-box-orient:vertical;-webkit-box-pack:center;-webkit-line-clamp:2;overflow:hidden;width:100%;min-height:48px;
+  padding:8px var(--sg-dir) 8px 54px;border-radius:12px;background-color:var(--sg-fundo-item);color:var(--sg-txt);text-decoration:none;
+  font:400 13.5px/1.2 var(--f-body,system-ui,sans-serif);overflow-wrap:anywhere;transition:background-color .12s,color .12s}
+.sg .sg-itens > a[data-desc]:not([data-desc=""]),.sg .sg-inicio > a[data-desc]:not([data-desc=""]){padding-bottom:24px}
+.sg .sg-itens > a:has(> .sg-n){--sg-dir:44px}
+.sg .sg-itens > a::after,.sg .sg-inicio > a::after{content:attr(data-desc);position:absolute;left:54px;right:var(--sg-dir);bottom:0;
+  height:24px;padding:2px 0 8px;background-color:var(--sg-fundo-item);font-size:11.5px;font-weight:400;line-height:13.8px;
+  color:var(--sg-mudo);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background-color .12s}
+.sg .sg-itens > a:not([data-desc])::after,.sg .sg-itens > a[data-desc=""]::after{content:"";height:8px;padding:0}
+.sg .sg-mod-btn{position:relative;display:grid;grid-template-columns:36px minmax(0,1fr) auto;
+  grid-template-rows:auto auto;column-gap:10px;row-gap:0;align-items:center;align-content:center;width:100%;min-height:48px;padding:6px 8px;
+  border-radius:12px;color:var(--sg-txt);text-decoration:none;font:400 13.5px/1.2 var(--f-body,system-ui,sans-serif);
+  overflow-wrap:anywhere;transition:background-color .12s,color .12s}
+.sg .sg-q{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+  background:var(--sg-cor);color:var(--sg-icone);transition:filter .12s,box-shadow .12s}
+.sg .sg-itens > a > .sg-q,.sg .sg-inicio > a > .sg-q{position:absolute;left:8px;top:50%;margin-top:-18px}
+.sg .sg-mod-btn > .sg-q{grid-column:1;grid-row:1 / span 2}
+.sg .sg-q svg{width:18px;height:18px}
+.sg .sg-itens > a:hover{--sg-fundo-item:var(--sg-hover-opaco);color:#fff}
+.sg .sg-mod-btn:hover{background:var(--sg-hover);color:#fff}
+.sg .sg-itens > a:hover .sg-q,.sg .sg-mod-btn:hover .sg-q{filter:brightness(1.08) saturate(1.05)}
+/* a tela atual: fundo, filete de 3 px na cor da secao e o quadrinho forte (aro branco e brilho na cor) */
+.sg .sg-itens > a.on{--sg-fundo-item:var(--sg-ativo-opaco);color:#fff;font-weight:600}
+.sg .sg-itens > a.on::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--sg-cor)}
+.sg .sg-itens > a.on .sg-q,.sg .sg-mod.sg-contem > .sg-mod-btn .sg-q{box-shadow:inset 0 0 0 2px rgba(255,255,255,.85),0 0 0 4px rgba(var(--sg-rgb),.35)}
+/* contador (paradas operacionais em aberto) */
+.sg .sg-n{position:absolute;right:8px;top:50%;transform:translateY(-50%);border-radius:999px;background:#FF6B6B;color:#0B2A47;
+  padding:1px 7px;font:700 11px/1.4 var(--f-body,system-ui,sans-serif)}
+
+/* Inicio SIGA-MG: o cartao de destaque do topo, com o simbolo num quadrinho branco/8% */
+.sg .sg-inicio > a{--sg-dir:30px;--sg-fundo-item:color-mix(in srgb,#FFFFFF 5%,#0B2A47);border:1px solid rgba(255,255,255,.12)}
+.sg .sg-inicio > a > .sg-q{left:7px}
+.sg .sg-inicio > a:hover{--sg-fundo-item:color-mix(in srgb,#FFFFFF 8%,#0B2A47);border-color:rgba(255,255,255,.25);color:#fff}
+.sg .sg-inicio .sg-q{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)}
+.sg .sg-inicio .sg-q img{width:22px;height:22px;display:block}
+.sg .sg-ir{position:absolute;right:10px;top:50%;margin-top:-7px;color:rgba(255,255,255,.4);display:flex}
+.sg .sg-ir svg{width:14px;height:14px}
+.sg .sg-inicio > a:hover .sg-ir{color:rgba(255,255,255,.7)}
+
+/* grupo com telas embaixo (ex.: Zeus > Relatorios Zeus): abre na guia vertical; o nome em no maximo 2 linhas */
+.sg .sg-mod-t{grid-column:2;grid-row:1;min-width:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.sg .sg-mod-d{grid-column:2;grid-row:2;margin-top:2px;min-width:0;font-size:11.5px;line-height:1.2;color:var(--sg-mudo);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sg .sg-mod-d:empty{display:none}
+.sg .sg-mod-btn .sg-seta{grid-column:3;grid-row:1 / span 2;width:14px;height:14px;color:rgba(255,255,255,.5);transition:transform .15s}
+.sg .sg-mod.sg-aberto > .sg-mod-btn .sg-seta{transform:rotate(90deg)}
+.sg .sg-mod.sg-contem > .sg-mod-btn{color:#fff;font-weight:600}
+/* os submenus sao as pilulas em degrade de todos os sistemas (.siga-guia e .siga-pilula em static/siga/chapa.css) */
+.sg .sg-filhos{--cor:var(--sg-cor);display:none}
+.sg .sg-mod.sg-aberto > .sg-filhos{display:flex}
+.sg-fly-tit{display:none}
+
+/* busca: as secoes e os grupos abrem, some o que nao bate; Enter abre o marcado */
+.sg nav.menu.buscando .navgroup.sg-fechada .sg-itens{display:flex}
+.sg nav.menu.buscando .sg-mod > .sg-filhos{display:flex}
+.sg nav.menu.buscando .sg-sec-n{display:none}
+.sg nav.menu a[hidden],.sg .navgroup.busca-fora,.sg .sg-mod.busca-fora{display:none !important}
+.sg nav.menu a.busca-sel{--sg-fundo-item:var(--sg-ativo-opaco);background:var(--sg-fundo-item);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+
+/* rodape: base do CHB e WhatsApp; Recolher menu */
+.sg-rodape{flex:none;padding:8px 14px;font-size:11.5px;line-height:1.55;color:var(--sg-mudo);border-top:1px solid var(--sg-borda)}
+.sg-rodape b{color:var(--sg-txt);font-weight:600}
+.sg-pe{flex:none;padding:8px;border-top:1px solid var(--sg-borda)}
+.sg .sg-recolher{display:flex;align-items:center;gap:10px;width:100%;height:36px;padding:0 12px;border-radius:9px;font-size:13px;
+  color:rgba(255,255,255,.65)}
+.sg .sg-recolher:hover{color:#fff;background:rgba(255,255,255,.08)}
+.sg .sg-recolher svg{width:18px;height:18px}
+.sg .sg-ic-expandir{display:none}
+
+/* ---------- recolhido (computador): o trilho de 60 px, so os quadrinhos ----------
+   "not all and (max-width:900px)" e o contrario exato da gaveta (e do matchMedia do menu.js): com (min-width:901px)
+   uma largura fracionaria entre 900 e 901 px (zoom do navegador) ficava sem nenhuma das duas */
+@media not all and (max-width:900px){
+  /* expandindo (60 -> 272 px): o conteudo ja tem a largura final e vai aparecendo, sem quebrar as linhas no meio */
+  .app:not(.menu-recolhido) .sg :is(.sg-marca,nav.menu,.sg-rodape,.sg-pe){min-width:var(--side-w,272px)}
+  .app:not(.menu-recolhido) .sg .sg-busca{min-width:calc(var(--side-w,272px) - 20px)}
+  .app.menu-recolhido .sg .sg-marca,.app.menu-recolhido .sg .sg-busca,.app.menu-recolhido .sg .sg-sec,
+  .app.menu-recolhido .sg .sg-rodape,.app.menu-recolhido .sg .busca-vazio{display:none}
+  .app.menu-recolhido .sg nav.menu{padding:10px 0;scrollbar-width:none}
+  .app.menu-recolhido .sg nav.menu::-webkit-scrollbar{display:none}
+  .app.menu-recolhido .sg .navgroup{margin-top:0}
+  .app.menu-recolhido .sg .navgroup + .navgroup::before{content:"";display:block;width:24px;height:1px;margin:8px auto;background:rgba(255,255,255,.2)}
+  .app.menu-recolhido .sg .navgroup.sg-fechada .sg-itens{display:flex}
+  .app.menu-recolhido .sg .sg-itens{align-items:center;gap:4px;margin-top:0}
+  .app.menu-recolhido .sg .sg-itens > a,.app.menu-recolhido .sg .sg-inicio > a,.app.menu-recolhido .sg .sg-mod-btn{
+    display:grid;grid-template-columns:36px;grid-template-rows:36px;width:44px;min-height:44px;margin:0 auto;padding:4px;
+    place-content:center;column-gap:0;font-size:0;border-radius:12px;overflow:visible}
+  .app.menu-recolhido .sg .sg-inicio > a{border-color:transparent;background:none}
+  .app.menu-recolhido .sg .sg-itens > a::after,.app.menu-recolhido .sg .sg-inicio > a::after,
+  .app.menu-recolhido .sg .sg-itens > a.on::before,.app.menu-recolhido .sg .sg-ir,
+  .app.menu-recolhido .sg .sg-mod-t,.app.menu-recolhido .sg .sg-mod-d,.app.menu-recolhido .sg .sg-mod-btn .sg-seta{display:none}
+  .app.menu-recolhido .sg .sg-q{position:static;margin:0;grid-row:1;grid-column:1}
+  .app.menu-recolhido .sg .sg-n{position:absolute;top:-2px;right:-4px;transform:none;padding:0 5px;font-size:10px;line-height:16px}
+  .app.menu-recolhido .sg .sg-mod > .sg-filhos,.app.menu-recolhido .sg nav.menu.buscando .sg-mod > .sg-filhos{display:none}
+  /* grupo no trilho: a lista abre ao lado (menu.js poe a posicao) */
+  .app.menu-recolhido .sg .sg-mod.sg-flyout > .sg-filhos{display:flex;position:fixed;z-index:80;left:var(--sg-fly-x,68px);
+    top:var(--sg-fly-y,80px);width:260px;max-height:calc(100vh - var(--sg-fly-y,80px) - 8px);overflow-y:auto;margin:0;
+    padding:8px 6px;border:1px solid rgba(255,255,255,.10);border-left:1px solid rgba(255,255,255,.10);border-radius:14px;
+    background:#0B2A47;box-shadow:0 18px 44px rgba(0,0,0,.45)}
+  .app.menu-recolhido .sg .sg-mod.sg-flyout > .sg-filhos .sg-fly-tit{display:block;padding:2px 10px 8px;font-size:11px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--sg-titulo)}
+  .app.menu-recolhido .sg .sg-mod.sg-flyout > .sg-filhos .siga-pilula::before{display:none}
+  .app.menu-recolhido .sg .sg-mod.sg-flyout > .sg-mod-btn{background:var(--sg-hover)}
+  .app.menu-recolhido .sg .sg-recolher{justify-content:center;padding:0;gap:0}
+  .app.menu-recolhido .sg .sg-recolher span,.app.menu-recolhido .sg .sg-ic-recolher{display:none}
+  .app.menu-recolhido .sg .sg-ic-expandir{display:block}
+}
+
+/* ---------- celular: gaveta de 300 px por cima da tela ---------- */
+@media (max-width:900px){
+  .sidebar.sg{position:fixed;left:0;top:0;bottom:0;height:auto;width:300px;max-width:86vw;transform:translateX(-100%);
+    transition:transform .22s ease;box-shadow:none}
+  .app.menu-aberto .sidebar.sg{transform:none;box-shadow:0 0 40px rgba(0,0,0,.35)}
+  .sg .sg-fechar{display:grid}
+  .sg-pe{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .sidebar.sg,.sg .sg-q,.sg-sec .sg-seta,.sg .sg-mod-btn .sg-seta{transition:none}
+}
+
+/* nome do sistema no topo como link (Configuracoes do portal: leva a pagina inicial delas) */
+.sg a.sg-marca-txt{color:inherit;text-decoration:none;border-radius:6px}
+.sg a.sg-marca-txt:hover .bt{text-decoration:underline;text-underline-offset:3px}
+
+/* ---- pílulas do submenu (static/siga/chapa.css) ---- */
+.siga-guia{--siga-meio:16px;--siga-guia-cor:color-mix(in srgb,var(--cor,#20C997) 93%,#FFFFFF);
+  display:flex;flex-direction:column;gap:2px;margin:2px 0 4px 25px;padding:0 0 0 8px;list-style:none;border:0;
+  background:linear-gradient(var(--siga-guia-cor),var(--siga-guia-cor)) left top/1px calc(100% - var(--siga-meio)) no-repeat}
+.siga-guia .siga-guia{--siga-guia-cor:color-mix(in srgb,var(--cor,#20C997) 76%,#FFFFFF);margin:2px 0 0 6px}
+.siga-guia .siga-guia .siga-guia{--siga-guia-cor:color-mix(in srgb,var(--cor,#20C997) 58%,#FFFFFF)}
+.siga-menu .siga-pilula,.siga-pilula{--b1:50%;--b2:82%;position:relative;display:flex !important;align-items:center;gap:8px;box-sizing:border-box;width:100%;min-width:0;
+  height:calc(var(--siga-meio,16px)*2);min-height:0;margin:0 !important;padding:0 6px 0 8px !important;border:0 !important;border-radius:10px !important;opacity:1;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--cor,#20C997) var(--b1),#FFFFFF),color-mix(in srgb,var(--cor,#20C997) var(--b2),#FFFFFF)) !important;
+  color:#0B2A47 !important;font-size:12.5px !important;font-weight:500 !important;line-height:1.2 !important;letter-spacing:0 !important;text-align:left;text-transform:none !important;
+  text-decoration:none !important;cursor:pointer;box-shadow:none}
+.siga-guia .siga-guia .siga-pilula{--b1:34%;--b2:62%}
+.siga-guia .siga-guia .siga-guia .siga-pilula{--b1:20%;--b2:46%}
+.siga-pilula>span:first-of-type{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.siga-pilula svg,.siga-pilula .bi{flex:none;color:rgba(11,42,71,.7)}
+.siga-pilula:hover{filter:brightness(1.05)}
+.siga-pilula:focus-visible{outline:2px solid #FFFFFF;outline-offset:1px}
+.siga-pilula::before{content:"";position:absolute;left:-8px;top:50%;width:8px;height:1px;margin:0;border-radius:0;opacity:1;transform:none;background:var(--siga-guia-cor)}
+.siga-menu .siga-pilula.aberto,.siga-pilula.aberto{--b1:64%;--b2:93%;font-weight:600 !important;box-shadow:0 1px 6px color-mix(in srgb,var(--cor,#20C997) 30%,transparent)}
+.siga-guia .siga-guia .siga-pilula.aberto{--b1:44%;--b2:76%}
+.siga-guia .siga-guia .siga-guia .siga-pilula.aberto{--b1:28%;--b2:58%}
+.siga-menu .siga-pilula.on,.siga-pilula.on,.siga-guia .siga-pilula.on{--b1:70%;--b2:93%;font-weight:700 !important;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.85),0 0 0 3px color-mix(in srgb,var(--cor,#20C997) 35%,transparent)}
+.siga-pilula.aberto::after,.siga-pilula.on::after{content:"";position:absolute;z-index:1;left:-11px;top:50%;width:7px;height:7px;margin:-3.5px 0 0;border-radius:9999px;opacity:1;transform:none;
+  background:var(--siga-guia-cor);box-shadow:0 0 0 2px #0B2A47}
+.siga-pilula.on::after{left:-12px;width:9px;height:9px;margin-top:-4.5px;background:var(--cor,#20C997)}
+@media screen and (pointer:coarse){.siga-guia{--siga-meio:20px}}

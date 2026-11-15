@@ -26,13 +26,13 @@ export async function render(main, rota) {
       <p>Os resultados efetivos do Instituto: quantas pessoas, famílias, comunidades e municípios foram alcançados, e quanto de cada meta já foi entregue.</p></div>
       <label class="filtros" style="margin:0">Período ${seletorAno(b, ano ?? '')}</label></div>
     <div class="kpis">
-      ${kpi('Pessoas beneficiadas', fmtNum(ind.beneficiados), textoPeriodo(ano), { destaque: true })}
-      ${kpi('Famílias atendidas', fmtNum(ind.familias), 'Novas famílias acompanhadas', { destaque: true })}
-      ${kpi('Projetos realizados', fmtNum(realizados), `${fmtNum(ind.projetosEmExecucao)} em execução hoje`)}
-      ${kpi('Comunidades alcançadas', fmtNum(ind.comunidades), 'Maior alcance mensal de cada projeto')}
-      ${kpi('Municípios atendidos', fmtNum(ind.municipios), ind.listaMunicipios.join(', '))}
-      ${kpi('Horas de atividade', fmtNum(ind.horas), 'Aulas, oficinas, atendimentos')}
-      ${kpi('Metas cumpridas', `${cumpridas} de ${metas.length}`, 'Integralmente, em todos os projetos', { medidor: metas.length ? cumpridas / metas.length : 0 })}
+      ${kpi('Pessoas beneficiadas', fmtNum(ind.beneficiados), textoPeriodo(ano), { destaque: true, cor: 'var(--s3)' })}
+      ${kpi('Famílias atendidas', fmtNum(ind.familias), 'Novas famílias acompanhadas', { destaque: true, cor: 'var(--s3)' })}
+      ${kpi('Projetos realizados', fmtNum(realizados), `${fmtNum(ind.projetosEmExecucao)} em execução hoje`, { cor: 'var(--leaf)' })}
+      ${kpi('Comunidades alcançadas', fmtNum(ind.comunidades), 'Maior alcance mensal de cada projeto', { cor: 'var(--s7)' })}
+      ${kpi('Municípios atendidos', fmtNum(ind.municipios), ind.listaMunicipios.join(', '), { cor: 'var(--s7)' })}
+      ${kpi('Horas de atividade', fmtNum(ind.horas), 'Aulas, oficinas, atendimentos', { cor: 'var(--leaf)' })}
+      ${kpi('Metas cumpridas', `${cumpridas} de ${metas.length}`, 'Integralmente, em todos os projetos', { cor: 'var(--s3)', medidor: metas.length ? cumpridas / metas.length : 0 })}
       ${kpi('Custo por pessoa atendida', ind.beneficiados ? fmtMoeda(ind.aplicado / ind.beneficiados) : '—', 'Aplicado no período ÷ pessoas')}
     </div>
     <div class="grade">

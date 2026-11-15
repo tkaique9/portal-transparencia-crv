@@ -104,6 +104,13 @@ export function serieMensal(b, ano = null) {
   const mr = somaMes(b.receitas, 'data', r => r.valor);
   const md = somaMes(b.despesas, 'data', d => d.valor);
   const mp = somaMes(b.atendimentos, 'mes', a => a.pessoas);
+  // ano em andamento: corta os meses que ainda não aconteceram (sem nenhum lançamento
+  // até o fim), senão o acumulado aparece como uma reta até dezembro
+  if (ano) {
+    let ult = -1;
+    chaves.forEach((k, i) => { if (mr.get(k) || md.get(k) || mp.get(k)) ult = i; });
+    if (ult >= 0) chaves = chaves.slice(0, ult + 1);
+  }
   const receitas = chaves.map(k => mr.get(k) || 0);
   const despesas = chaves.map(k => md.get(k) || 0);
   let ac = 0;
@@ -172,3 +179,34 @@ export function porArea(b, ano = null) {
     };
   }).sort((a, b) => b.investido - a.investido);
 }
+
+/**
+ * Comparação com o ano anterior no MESMO intervalo de meses.
+ * Exercício em andamento (lançado até outubro) contra o ano anterior
+ * inteiro faria toda queda parecer real; aqui jan–out/2026 é comparado com
+ * jan–out/2025. Devolve null quando não há ano anterior com lançamentos.
+ */
+export function comparativo(b, ano) {
+  if (!ano) return null;
+  const ant = Number(ano) - 1;
+  const meses = [...b.receitas, ...b.despesas].filter(r => anoDe(r.data) === Number(ano)).map(r => mesDe(r.data));
+  if (!meses.length) return null;
+  const ate = Math.max(...meses);
+  const dentro = (iso, campo = iso) => anoDe(campo) !== ant || mesDe(campo) <= ate;
+  const recorte = {
+    ...b,
+    receitas: b.receitas.filter(r => dentro(r.data)),
+    despesas: b.despesas.filter(d => dentro(d.data)),
+    atendimentos: b.atendimentos.filter(a => dentro(a.mes)),
+  };
+  if (!recorte.receitas.some(r => anoDe(r.data) === ant) && !recorte.despesas.some(d => anoDe(d.data) === ant)) return null;
+  const MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  return {
+    anterior: indicadores(recorte, ant),
+    atual: indicadores({ ...b, receitas: b.receitas.filter(r => anoDe(r.data) !== Number(ano) || mesDe(r.data) <= ate) }, ano),
+    rotulo: ate === 12 ? `vs ${ant}` : `vs jan–${MES[ate - 1]}/${String(ant).slice(2)}`,
+  };
+}
+
+/** Variação relativa; null quando a base é zero (não existe % de zero). */
+export const variacao = (atual, anterior) => anterior ? (atual - anterior) / Math.abs(anterior) : null;

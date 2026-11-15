@@ -37,8 +37,8 @@ export async function render(main, rota) {
     const vencendo = vigentes.filter(c => c.fim >= hojeISO() && c.fim <= new Date(Date.now() + 90 * 864e5).toISOString().slice(0, 10));
     res.innerHTML = `
       <div class="kpis">
-        ${kpi('Instrumentos vigentes', fmtNum(vigentes.length), `${fmtNum(vencendo.length)} vencem nos próximos 90 dias`, { destaque: true })}
-        ${kpi('Valor dos vigentes', fmtMoeda(vigentes.reduce((a, c) => a + valorAtualizado(c), 0)), 'Incluindo aditivos')}
+        ${kpi('Instrumentos vigentes', fmtNum(vigentes.length), `${fmtNum(vencendo.length)} vencem nos próximos 90 dias`, { destaque: true, cor: 'var(--leaf)' })}
+        ${kpi('Valor dos vigentes', fmtMoeda(vigentes.reduce((a, c) => a + valorAtualizado(c), 0)), 'Incluindo aditivos', { cor: 'var(--s1)' })}
         ${kpi('Parceiros com instrumento', fmtNum(new Set(b.contratos.map(c => c.parceiroId)).size), '')}
         ${kpi('Em prestação de contas', fmtNum(b.contratos.filter(c => c.situacao === 'Em prestação de contas').length), `${fmtNum(prestacoes.length)} prestações publicadas`)}
       </div>

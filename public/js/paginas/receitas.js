@@ -5,7 +5,7 @@ import * as calc from '../calculo.js';
 import { esc, fmtMoeda, fmtMoedaCurta, fmtNum, fmtPct, MESES_LONGOS } from '../util.js';
 import { kpi, opcoes, montarTabela, linkDocumento, ligarDocumentos } from '../ui/componentes.js';
 import { montarGrafico, linhaDica } from '../ui/graficos.js';
-import { COR, rotuloMes } from './inicio.js';
+import { COR, rotuloMes, fmtRotuloMoeda } from './inicio.js';
 import { ORIGENS, TIPOS_RECEITA } from '../dados/esquema.js';
 
 export async function render(main, rota) {
@@ -51,10 +51,10 @@ export async function render(main, rota) {
 
     res.innerHTML = `
       <div class="kpis">
-        ${kpi('Total recebido', fmtMoeda(total), textoFiltros, { destaque: true })}
-        ${kpi('Recebimentos', fmtNum(lista.length), lista.length ? `média de ${fmtMoeda(total / lista.length)}` : '')}
-        ${kpi('Principal origem', origens[0]?.rotulo || '—', origens[0] ? fmtPct(origens[0].valor / total) + ' do total' : '')}
-        ${kpi('Parceiros e doadores', fmtNum(parceiros.length), parceiros[0] ? `maior: ${parceiros[0].rotulo}` : '')}
+        ${kpi('Total recebido', fmtMoeda(total), textoFiltros, { destaque: true, cor: 'var(--s1)' })}
+        ${kpi('Recebimentos', fmtNum(lista.length), lista.length ? `média de ${fmtMoeda(total / lista.length)}` : '', { cor: 'var(--s1)' })}
+        ${kpi('Principal origem', origens[0]?.rotulo || '—', origens[0] ? fmtPct(origens[0].valor / total) + ' do total' : '', { cor: 'var(--leaf)', medidor: origens[0] ? origens[0].valor / total : null })}
+        ${kpi('Parceiros e doadores', fmtNum(parceiros.length), parceiros[0] ? `maior: ${parceiros[0].rotulo}` : '', { cor: 'var(--leaf)' })}
       </div>
       <div class="grade">
         <section class="cartao m6"><div class="cartao-cab"><div><h3>Por origem do recurso</h3><p>Clique numa barra para filtrar</p></div></div><div id="g-origem"></div></section>
@@ -71,7 +71,7 @@ export async function render(main, rota) {
     });
     montarGrafico(res.querySelector('#g-mes'), {
       tipo: 'colunas', vazio: lista.length ? null : 'Nenhuma receita com esses filtros.', categorias: cats,
-      series: [{ nome: 'Receitas', valores: serie.receitas, cor: COR.receita }], fmtEixo: fmtMoedaCurta,
+      series: [{ nome: 'Receitas', valores: serie.receitas, cor: COR.receita }], fmtEixo: fmtMoedaCurta, fmtRotulo: fmtRotuloMoeda,
       dica: i => `<b>${esc(cats[i])}</b>${linhaDica(COR.receita, 'Recebido', fmtMoeda(serie.receitas[i]))}`,
       tabela: { colunas: ['Mês', 'Recebido'], linhas: serie.chaves.map((_, i) => [cats[i], fmtMoeda(serie.receitas[i])]) },
     });

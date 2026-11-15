@@ -66,12 +66,12 @@ export async function render(main, rota) {
     res.innerHTML = `
       ${parcial ? `<div class="alerta-caixa info">O exercício ${ano} está em andamento: os valores são parciais, até o último lançamento publicado.</div>` : ''}
       <div class="kpis">
-        ${kpi('Saldo inicial', fmtMoeda(P.saldoAnterior), `Acumulado até 31/12/${ano - 1}`)}
-        ${kpi('Receitas recebidas', fmtMoeda(P.recebido), `${fmtNum(P.rec.length)} lançamentos`, { destaque: true })}
-        ${kpi('Despesas realizadas', fmtMoeda(P.aplicado), `${fmtNum(P.des.length)} pagamentos`, { destaque: true })}
+        ${kpi('Saldo inicial', fmtMoeda(P.saldoAnterior), `Acumulado até 31/12/${ano - 1}`, { cor: 'var(--leaf)' })}
+        ${kpi('Receitas recebidas', fmtMoeda(P.recebido), `${fmtNum(P.rec.length)} lançamentos`, { destaque: true, cor: 'var(--s1)' })}
+        ${kpi('Despesas realizadas', fmtMoeda(P.aplicado), `${fmtNum(P.des.length)} pagamentos`, { destaque: true, cor: 'var(--s2)' })}
         ${kpi('Saldo financeiro', fmtMoeda(P.saldoFinal), `Resultado do exercício: ${fmtMoeda(P.saldoPeriodo)}`, { destaque: true })}
-        ${kpi('Orçamento aprovado', P.orcado ? fmtMoeda(P.orcado) : '—', projeto ? projeto.nome : 'Instituto')}
-        ${kpi('Execução orçamentária', P.execucao !== null ? fmtPct(P.execucao) : '—', 'Realizado ÷ aprovado', { medidor: P.execucao ?? 0 })}
+        ${kpi('Orçamento aprovado', P.orcado ? fmtMoeda(P.orcado) : '—', projeto ? projeto.nome : 'Instituto', { cor: 'var(--s7)' })}
+        ${kpi('Execução orçamentária', P.execucao !== null ? fmtPct(P.execucao) : '—', 'Realizado ÷ aprovado', { cor: 'var(--s7)', medidor: P.execucao ?? 0 })}
       </div>
       <div class="secao-titulo"><h2>Execução orçamentária por categoria</h2></div>
       <div id="t-orc"></div>

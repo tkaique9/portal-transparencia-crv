@@ -66,6 +66,22 @@ test('previsto × realizado inclui categoria gasta sem orçamento', () => {
   assert.equal(pr26[0].execucao, null, 'sem orçamento, execução fica indefinida — não 0% nem infinito');
 });
 
+test('comparativo usa o mesmo intervalo de meses do ano anterior', () => {
+  const b = base();
+  b.receitas.push({ data: '2025-01-20', valor: 100, origem: 'A' }, { data: '2026-02-05', valor: 50, origem: 'A' });
+  const c = calc.comparativo(b, 2026); // 2026 tem lançamento até fevereiro
+  assert.equal(c.rotulo, 'vs jan–fev/25');
+  assert.equal(c.anterior.recebido, 100, 'março/2025 (600) fica fora: só jan–fev contam');
+  assert.equal(calc.variacao(450, 100), 3.5);
+  assert.equal(calc.variacao(10, 0), null, 'sem base não existe %');
+  assert.equal(calc.comparativo(b, 2025), null, 'sem 2024, sem comparação');
+});
+
+test('série do ano em andamento termina no último mês com lançamento', () => {
+  const s = calc.serieMensal(base(), 2026);
+  assert.deepEqual(s.chaves, ['2026-01', '2026-02']);
+});
+
 test('LGPD: CPF mascarado, CNPJ inteiro', () => {
   assert.equal(mascararDocumento('123.456.789-09'), '***.456.789-**');
   assert.equal(mascararDocumento('12345678000190'), '12.345.678/0001-90');

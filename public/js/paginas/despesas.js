@@ -56,16 +56,16 @@ export async function render(main, rota) {
 
     res.innerHTML = `
       <div class="kpis">
-        ${kpi('Total gasto', fmtMoeda(total), textoFiltros, { destaque: true })}
-        ${kpi('Pagamentos', fmtNum(lista.length), lista.length ? `média de ${fmtMoeda(total / lista.length)}` : '')}
-        ${kpi('Orçamento aprovado', previsto ? fmtMoeda(previsto) : '—', f.mes ? 'Orçamento anual — o mês não se aplica' : 'Para o mesmo ano e projeto')}
-        ${kpi('Execução do orçamento', previsto ? fmtPct(realizadoOrc / previsto) : '—', previsto ? `${fmtMoeda(previsto - realizadoOrc)} a executar` : '', { medidor: previsto ? realizadoOrc / previsto : 0 })}
+        ${kpi('Total gasto', fmtMoeda(total), textoFiltros, { destaque: true, cor: 'var(--s2)' })}
+        ${kpi('Pagamentos', fmtNum(lista.length), lista.length ? `média de ${fmtMoeda(total / lista.length)}` : '', { cor: 'var(--s2)' })}
+        ${kpi('Orçamento aprovado', previsto ? fmtMoeda(previsto) : '—', f.mes ? 'Orçamento anual — o mês não se aplica' : 'Para o mesmo ano e projeto', { cor: 'var(--s7)' })}
+        ${kpi('Execução do orçamento', previsto ? fmtPct(realizadoOrc / previsto) : '—', previsto ? `${fmtMoeda(previsto - realizadoOrc)} a executar` : '', { cor: 'var(--s7)', medidor: previsto ? realizadoOrc / previsto : 0 })}
       </div>
       <div class="grade">
         <section class="cartao m6"><div class="cartao-cab"><div><h3>Despesas por categoria</h3><p>Clique numa barra para filtrar</p></div></div><div id="g-cat"></div></section>
         <section class="cartao m6"><div class="cartao-cab"><div><h3>Despesas por projeto</h3></div></div><div id="g-proj"></div></section>
         <section class="cartao m6"><div class="cartao-cab"><div><h3>Maiores fornecedores</h3><p>Quem mais recebeu no período</p></div></div><div id="g-forn"></div></section>
-        <section class="cartao m6"><div class="cartao-cab"><div><h3>Orçamento previsto × realizado</h3><p>Por categoria${ano ? `, exercício ${ano}` : ', todos os exercícios'}</p></div></div><div id="g-pr"></div></section>
+        <section class="cartao m6"><div class="cartao-cab"><div><h3>Orçamento previsto × realizado</h3><p>Por categoria${ano ? `, exercício ${ano}` : ', todos os exercícios'} · % = execução</p></div></div><div id="g-pr"></div></section>
       </div>
       <div class="secao-titulo"><h2>Pagamentos</h2></div>
       <div id="tabela"></div>`;
@@ -86,7 +86,7 @@ export async function render(main, rota) {
       tipo: 'colunas', vazio: pr.length ? null : 'Sem orçamento cadastrado para esse recorte.', categorias: pr.map(x => x.categoria.split(' ')[0]),
       series: [{ nome: 'Previsto', valores: pr.map(x => x.previsto), cor: COR_PREVISTO }, { nome: 'Realizado', valores: pr.map(x => x.realizado), cor: COR.despesa }],
       legenda: [{ nome: 'Previsto (orçamento aprovado)', cor: COR_PREVISTO }, { nome: 'Realizado', cor: COR.despesa }],
-      fmtEixo: fmtMoedaCurta,
+      fmtEixo: fmtMoedaCurta, rotuloGrupo: i => pr[i].execucao === null ? '' : fmtPct(pr[i].execucao, 0),
       dica: i => `<b>${esc(pr[i].categoria)}</b>${linhaDica(COR_PREVISTO, 'Previsto', fmtMoeda(pr[i].previsto))}${linhaDica(COR.despesa, 'Realizado', fmtMoeda(pr[i].realizado))}${linhaDica(null, 'Execução', pr[i].execucao === null ? '—' : fmtPct(pr[i].execucao))}`,
       tabela: { colunas: ['Categoria', 'Previsto', 'Realizado', 'Execução'], linhas: pr.map(x => [x.categoria, fmtMoeda(x.previsto), fmtMoeda(x.realizado), x.execucao === null ? '—' : fmtPct(x.execucao)]) },
     });
