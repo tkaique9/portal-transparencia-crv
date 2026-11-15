@@ -275,9 +275,12 @@ main { container: conteudo / inline-size; }
 .filtros { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 12px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; margin-bottom: 18px; }
 .filtros label, .campo { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--grey); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
 .filtros select, .filtros input, .campo input, .campo select, .campo textarea { text-transform: none; letter-spacing: 0; font-weight: 400; font-size: 13.5px; color: var(--ink); background: var(--card); border: 1px solid var(--line-strong); border-radius: var(--r-sm); padding: 6px 10px; min-height: 36px; }
-.filtros input[type="search"] { min-width: 220px; }
-.filtros .limpar { margin-left: auto; }
-@media (max-width: 640px) { .filtros > label { flex: 1 1 140px; } .filtros input[type="search"] { min-width: 0; } .filtros .limpar { margin-left: 0; } }
+/* filtros esticam e preenchem a linha toda; a pesquisa ganha o dobro de espaço; botões no tamanho deles */
+.filtros > label { flex: 1 1 150px; min-width: 0; }
+.filtros > label:has(input[type="search"]) { flex: 2 1 260px; }
+.filtros > label select, .filtros > label input { width: 100%; }
+.filtros .limpar { flex: none; }
+@media (max-width: 640px) { .filtros > label { flex: 1 1 140px; } .filtros > label:has(input[type="search"]) { flex-basis: 100%; } }
 .botao { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line-strong); background: var(--card); color: var(--ink); padding: 6px 14px; border-radius: var(--r-sm); cursor: pointer; font-size: 13.5px; text-decoration: none; min-height: 36px; white-space: nowrap; }
 .botao:hover { border-color: var(--leaf); color: var(--leaf); }
 .botao.primario { background: var(--leaf); border-color: var(--leaf); color: #fff; }
@@ -394,7 +397,7 @@ td .sub { display: block; color: var(--muted); font-size: 12px; }
 @media (max-width: 640px) { .galeria-tela .gt-palco { padding: 0 8px; } .galeria-tela .gt-seta { width: 38px; height: 38px; } }
 
 /* ---------------- documentos */
-.docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
 .doc { display: flex; gap: 12px; padding: 14px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); align-items: flex-start; min-width: 0; }
 .doc .icone-doc { flex: none; width: 40px; height: 48px; border-radius: 6px; background: var(--bad-bg); color: var(--bad); display: grid; place-items: center; font-size: .66rem; font-weight: 800; }
 .doc .icone-doc.img { background: var(--info-bg); color: var(--info); }
@@ -453,9 +456,19 @@ td .sub { display: block; color: var(--muted); font-size: 12px; }
 .giro { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--trilha); border-top-color: var(--leaf); animation: giro .9s linear infinite; }
 @keyframes giro { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
-.texto-longo { max-width: 780px; }
-.texto-longo h2 { margin-top: 1.4em; }
-.texto-longo li { margin-bottom: .4em; }
+/* páginas de texto: introdução em largura de leitura; cada seção vira um cartão numa grade que usa a tela toda */
+.texto-longo > p, .texto-longo > .alerta-caixa { max-width: 120ch; }
+/* colunas que se encaixam (cartão curto não deixa buraco embaixo de cartão longo) */
+.texto-grade { columns: 3 440px; column-gap: 16px; margin-top: 16px; }
+.texto-grade > .cartao { break-inside: avoid; margin-bottom: 16px; }
+.texto-grade .cartao h2 { font-size: 1.2rem; margin: 0 0 8px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.texto-grade ul { margin: 0; padding-left: 18px; }
+.texto-longo li { margin-bottom: .45em; }
+/* pesquisa: grupos lado a lado; listas longas em colunas */
+.busca-grade { columns: 3 460px; column-gap: 16px; }
+.busca-grade > .cartao { break-inside: avoid; margin-bottom: 16px; }
+.busca-grade ul { margin: 0; padding-left: 18px; columns: 2 300px; column-gap: 28px; }
+.busca-grade li { margin-bottom: 8px; break-inside: avoid; }
 
 @media print {
   .sidebar, .topbar, .rodape, .filtros, .grupo-botoes, .ver-tabela, .avisos, .faixa-exemplo { display: none !important; }

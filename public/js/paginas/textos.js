@@ -55,6 +55,18 @@ const SOBRE = () => `
     <p>Toda tabela pode ser baixada em Excel (os valores ficam numéricos, prontos para somar) e em PDF. A prestação de contas gera um relatório completo por exercício, do Instituto ou de um projeto.</p>
   </article>`;
 
+/**
+ * Cada <h2> do texto vira um cartão numa grade (tela larga = várias colunas,
+ * celular = uma). O texto em si não muda: só a disposição.
+ */
+function emCartoes(html) {
+  const [antes, ...secoes] = html.split('<h2>');
+  if (!secoes.length) return html;
+  const ultima = secoes.length - 1;
+  secoes[ultima] = secoes[ultima].replace('</article>', '');
+  return `${antes}<div class="texto-grade">${secoes.map(s => `<section class="cartao"><h2>${s}</section>`).join('')}</div></article>`;
+}
+
 export async function render(main, rota) {
-  main.innerHTML = rota.pagina === 'privacidade' ? PRIVACIDADE : SOBRE();
+  main.innerHTML = emCartoes(rota.pagina === 'privacidade' ? PRIVACIDADE : SOBRE());
 }

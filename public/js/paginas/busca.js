@@ -30,8 +30,8 @@ export async function render(main, rota) {
     <div class="trilha-nav"><a href="#/">Início</a> › Pesquisa</div>
     <h1>Pesquisa${q ? `: “${esc(q)}”` : ''}</h1>
     ${!termos.length ? '<p>Digite um termo na caixa de pesquisa do topo da página.</p>' : !total ? '<p class="vazio">Nada encontrado. Tente outro termo, como o nome de um projeto, município, fornecedor ou tipo de documento.</p>' : `<p class="mudo">${total} resultado(s).</p>`}
-    ${grupos.map(([nome, itens]) => `<section class="cartao" style="margin-bottom:14px"><div class="cartao-cab"><h2>${esc(nome)}</h2><span class="mudo pequeno">${itens.length}</span></div>
-      <ul style="margin:0;padding-left:18px">${itens.slice(0, LIMITE).map(i => `<li style="margin-bottom:6px">${i.doc ? `<button class="link-doc" type="button" data-ver-doc="${esc(i.doc)}">${esc(i.titulo)}</button>` : `<a href="${esc(i.href)}">${esc(i.titulo)}</a>`}<span class="sub mudo pequeno" style="display:block">${esc(i.sub)}</span></li>`).join('')}</ul>
-      ${itens.length > LIMITE ? `<p class="mudo pequeno" style="margin:8px 0 0">e mais ${itens.length - LIMITE}. Use os filtros da página de ${esc(nome.toLowerCase())} para refinar.</p>` : ''}</section>`).join('')}`;
+    <div class="busca-grade">${grupos.map(([nome, itens]) => `<section class="cartao"><div class="cartao-cab"><h2>${esc(nome)}</h2><span class="mudo pequeno">${itens.length}</span></div>
+      <ul>${itens.slice(0, LIMITE).map(i => `<li>${i.doc ? `<button class="link-doc" type="button" data-ver-doc="${esc(i.doc)}">${esc(i.titulo)}</button>` : `<a href="${esc(i.href)}">${esc(i.titulo)}</a>`}<span class="sub mudo pequeno" style="display:block">${esc(i.sub)}</span></li>`).join('')}</ul>
+      ${itens.length > LIMITE ? `<p class="mudo pequeno" style="margin:8px 0 0">e mais ${itens.length - LIMITE}. Use os filtros da página de ${esc(nome.toLowerCase())} para refinar.</p>` : ''}</section>`).join('')}</div>`;
   ligarDocumentos(main, b.documentos);
 }
