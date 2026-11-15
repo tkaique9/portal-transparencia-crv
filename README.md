@@ -5,6 +5,8 @@ recebeu, de onde vieram os recursos, onde foram aplicados, quem foi beneficiado
 e quais resultados foram entregues — com área restrita para a equipe lançar,
 aprovar e publicar as informações.
 
+**No ar (demonstração):** <https://tkaique9.github.io/portal-transparencia-crv/>
+
 > **Esta é a versão local.** Não há servidor nem banco central: os dados ficam
 > no navegador de quem usa (IndexedDB). Serve para validar o produto, as telas
 > e as regras com a equipe. Ver [Limites desta fase](#limites-desta-fase).
