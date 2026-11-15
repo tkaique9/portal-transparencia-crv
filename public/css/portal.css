@@ -161,9 +161,9 @@ main { width: 100%; max-width: none; margin: 0; padding: clamp(14px, 1.5vw, 32px
 @media (max-width: 560px) { .resumo { grid-template-columns: 1fr; } .heroi { padding: 18px; } }
 
 /* ---------------- perguntas (início) */
-.perguntas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 22px; }
-@media (max-width: 1150px) { .perguntas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 560px) { .perguntas { grid-template-columns: 1fr; } }
+.perguntas { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 22px; }
+@container conteudo (min-width: 520px) { .perguntas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container conteudo (min-width: 1000px) { .perguntas { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .pergunta { display: grid; grid-template-columns: 38px 1fr; gap: 4px 12px; padding: 14px 16px; background: var(--card); border: 1px solid var(--line);
   border-radius: var(--r); text-decoration: none; color: var(--ink); box-shadow: var(--sombra); transition: border-color .15s, transform .15s; position: relative; }
 .pergunta:hover { border-color: var(--leaf); transform: translateY(-1px); }
@@ -179,25 +179,35 @@ main { width: 100%; max-width: none; margin: 0; padding: clamp(14px, 1.5vw, 32px
 
 /* ---------------- cartões de indicador (KPI) */
 .kpis { display: grid; gap: 12px; margin-bottom: 22px; }
-/* Linhas sempre completas, conforme a largura: nunca sobra cartão sozinho.
-   8 cartões: 2 → 4 → 8 por linha; 6: 2 → 3 → 6; 5: 2 → 5; 4: 2 → 4. */
-.kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-@media (max-width: 520px) { .kpis { grid-template-columns: 1fr; } }
-/* duas colunas com número ímpar de cartões: o último ocupa a linha inteira, sem sobrar vão */
-@media (min-width: 521px) and (max-width: 1099px) { .kpis > .kpi:last-child:nth-child(odd) { grid-column: 1 / -1; } }
-@media (min-width: 1100px) {
-  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .kpis:has(> :nth-child(5):last-child) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .kpis:has(> :nth-child(6):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .kpis:has(> :nth-child(3):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* Linhas sempre completas, medidas pela ÁREA DE CONTEÚDO (container query no
+   <main>), não pela janela: o menu aberto, recolhido ou o zoom do navegador
+   mudam o espaço real. Cada cartão fica com pelo menos ~250 px.
+   8 cartões: 1 → 2 → 4 → 8 por linha; 6: 1 → 2 → 3 → 6; 5: 1 → 2 → 5; 4: 1 → 2 → 4. */
+main { container: conteudo / inline-size; }
+.kpis { grid-template-columns: 1fr; }
+@container conteudo (min-width: 500px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpis > .kpi:last-child:nth-child(odd) { grid-column: 1 / -1; } /* ímpar em 2 colunas: o último ocupa a linha */
 }
-@media (min-width: 1700px) {
+@container conteudo (min-width: 1000px) {
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .kpis > .kpi:last-child:nth-child(odd) { grid-column: auto; }
+  .kpis:has(> :nth-child(3):last-child), .kpis:has(> :nth-child(6):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@container conteudo (min-width: 1300px) {
+  .kpis:has(> :nth-child(5):last-child) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@container conteudo (min-width: 1560px) {
   .kpis:has(> :nth-child(6):last-child) { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
-@media (min-width: 2000px) {
+@container conteudo (min-width: 2080px) {
   .kpis:has(> :nth-child(8):last-child) { grid-template-columns: repeat(8, minmax(0, 1fr)); }
   .perguntas { grid-template-columns: repeat(8, minmax(0, 1fr)); }
 }
+/* o valor nunca quebra: em cartão estreito o minigráfico sai (a tendência está no gráfico grande) */
+.kpi { container-type: inline-size; }
+.kpi .valor { white-space: nowrap; }
+@container (max-width: 270px) { .kpi .mini { display: none; } }
 .kpi { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px 12px; box-shadow: var(--sombra); min-width: 0; position: relative; overflow: hidden; }
 .kpi::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--kpi-cor, var(--line-strong)); }
 .kpi .topo-kpi { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -218,7 +228,7 @@ main { width: 100%; max-width: none; margin: 0; padding: clamp(14px, 1.5vw, 32px
 /* ---------------- grade e cartões */
 .grade { display: grid; gap: 16px; grid-template-columns: repeat(12, 1fr); margin-bottom: 16px; }
 .grade > * { grid-column: span 12; min-width: 0; }
-@media (min-width: 1000px) { .grade .m6 { grid-column: span 6; } .grade .m4 { grid-column: span 4; } .grade .m8 { grid-column: span 8; } }
+@container conteudo (min-width: 900px) { .grade .m6 { grid-column: span 6; } .grade .m4 { grid-column: span 4; } .grade .m8 { grid-column: span 8; } }
 .cartao { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; box-shadow: var(--sombra); min-width: 0; }
 .cartao-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
 .cartao-cab h2, .cartao-cab h3 { margin: 0; font-size: 1.12rem; }
