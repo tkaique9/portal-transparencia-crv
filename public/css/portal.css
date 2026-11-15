@@ -178,6 +178,12 @@ main { width: 100%; max-width: 1480px; margin: 0 auto; padding: 24px 28px 56px; 
 
 /* ---------------- cartões de indicador (KPI) */
 .kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 12px; margin-bottom: 22px; }
+/* tela larga: linhas completas (8 cartões = 4 + 4, nunca 5 + 3); grupos de 5 ou 6 numa linha só */
+@media (min-width: 1200px) {
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .kpis:has(> :nth-child(5):last-child) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .kpis:has(> :nth-child(6):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 .kpi { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px 12px; box-shadow: var(--sombra); min-width: 0; position: relative; overflow: hidden; }
 .kpi::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--kpi-cor, var(--line-strong)); }
 .kpi .topo-kpi { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
