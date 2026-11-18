@@ -1,12 +1,14 @@
 // Quem somos: o quadro institucional do Instituto CRV Minas (dados/institucional.js) em lâminas de diretoria —
-// propósito, missão e visão, a atuação ligada aos números publicados, os valores e o resultado. Tem modo de
-// apresentação (tela cheia, uma lâmina por vez, setas do teclado) para levar a uma reunião.
-// Todo número vem da base publicada (basePublica) e das mesmas contas do painel e do Impacto social.
+// abertura, propósito/missão/visão, atuação ligada aos números publicados, a transformação no tempo, as fotos
+// dos projetos, os valores e o resultado. Tem modo de apresentação (tela cheia, uma lâmina por vez, setas do
+// teclado) para levar a uma reunião. Todo número vem da base publicada (basePublica) e das mesmas contas do
+// painel e do Impacto social; os números contam do zero quando a lâmina aparece (menos movimento: não contam).
 
 import { basePublica } from '../app.js';
 import * as calc from '../calculo.js';
 import { esc, fmtMoeda, fmtMoedaCurta, fmtNum } from '../util.js';
-import { kpi } from '../ui/componentes.js';
+import { kpi, ehImagem, urlImagem } from '../ui/componentes.js';
+import { rotuloMes } from './inicio.js';
 import { INSTITUTO, PILARES, PUBLICO, ATUACAO, VALORES } from '../dados/institucional.js';
 
 const svg = (corpo, w = 1.9) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${corpo}</svg>`;
@@ -33,6 +35,11 @@ const IC_VALOR = [
   '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/><path d="m15 5 3-2 3 2"/>',
 ];
 const COR_ATUACAO = { educacao: 'var(--logo-royal)', cultura: 'var(--logo-ciano)', esporte: 'var(--logo-ambar)', 'meio-ambiente': 'var(--s6)' };
+const SETA = svg('<path d="m6 9 6 6 6-6"/>', 2.2);
+
+/** Número que conta do zero quando a lâmina aparece; o texto inicial já é o valor final (impressão, sem JS). */
+const FMT = { num: fmtNum, moeda: fmtMoedaCurta };
+const contar = (v, tipo = 'num') => `<span class="conta" data-conta="${Number(v) || 0}" data-tipo="${tipo}">${esc(FMT[tipo](v))}</span>`;
 
 /** Texto do pilar com os trechos de destaque marcados (o texto vem do quadro, escapado antes de marcar). */
 function comDestaques(p) {
@@ -41,17 +48,45 @@ function comDestaques(p) {
   return t;
 }
 
-/** O propósito palavra a palavra, para entrar em sequência na abertura. */
-const palavras = t => t.split(' ').map((w, i) => `<span class="pal" style="--i:${i}">${esc(w)}</span>`).join(' ');
+/** O propósito palavra a palavra (entram em sequência); as dos destaques levam o degradê da logo. */
+function proposito(p) {
+  const destaque = new Set(p.destaques.flatMap(d => d.toLowerCase().split(' ')));
+  return p.texto.split(' ').map((w, i) => {
+    const limpa = w.toLowerCase().replace(/[.,]/g, '');
+    return `<span class="pal${destaque.has(limpa) ? ' grad' : ''}" style="--i:${i}">${esc(w)}</span>`;
+  }).join(' ');
+}
+
+/** A curva de pessoas atendidas, acumulado mês a mês: área e linha num SVG que se desenha. */
+function curva(serie) {
+  const ys = serie.pessoasAcumuladas;
+  if (ys.length < 2 || !ys[ys.length - 1]) return '';
+  const W = 1000, H = 300, top = Math.max(...ys);
+  const pt = (v, i) => [(i / (ys.length - 1)) * W, H - (v / top) * (H - 24) - 4];
+  const pts = ys.map(pt);
+  const linha = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+  const [xf, yf] = pts[pts.length - 1];
+  const marcas = [0.25, 0.5, 0.75].map(f => `<line x1="0" x2="${W}" y1="${(H - f * (H - 24) - 4).toFixed(1)}" y2="${(H - f * (H - 24) - 4).toFixed(1)}"/>`).join('');
+  return `<svg class="inst-curva" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Pessoas atendidas, acumulado: de ${fmtNum(ys[0])} a ${fmtNum(top)}">
+    <defs><linearGradient id="inst-g-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26BAF2" stop-opacity=".45"/><stop offset="1" stop-color="#26BAF2" stop-opacity="0"/></linearGradient>
+      <linearGradient id="inst-g-linha" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4FB3F0"/><stop offset=".7" stop-color="#26BAF2"/><stop offset="1" stop-color="#FFAF02"/></linearGradient></defs>
+    <g class="grade-c">${marcas}</g>
+    <path class="area" d="${linha} L${W},${H} L0,${H} Z" fill="url(#inst-g-area)"/>
+    <path class="linha" d="${linha}" pathLength="1" stroke="url(#inst-g-linha)"/>
+    <circle class="ponto" cx="${xf.toFixed(1)}" cy="${yf.toFixed(1)}" r="7"/></svg>`;
+}
 
 export async function render(main) {
   const b = basePublica();
   const ind = calc.indicadores(b, null);
   const areas = new Map(calc.porArea(b, null).map(a => [a.area, a]));
+  const serie = calc.serieMensal(b, null);
   const docs = b.documentos.filter(d => d.categoria !== 'Fotografia').length;
   const lancamentos = b.receitas.length + b.despesas.length;
   const anos = b.anos.length ? `${b.anos[b.anos.length - 1]}${b.anos.length > 1 ? `–${b.anos[0]}` : ''}` : '';
-  const proposito = PILARES.find(p => p.k === 'proposito');
+  const prop = PILARES.find(p => p.k === 'proposito');
+  const projetos = new Map(b.projetos.map(p => [p.id, p]));
+  const fotos = b.documentos.filter(d => ehImagem(d) && projetos.has(d.projetoId)).slice(0, 16);
 
   const dadosArea = a => {
     const ls = a.areasPortal.map(x => areas.get(x)).filter(Boolean);
@@ -62,21 +97,43 @@ export async function render(main) {
       horas: ls.reduce((s, x) => s + x.horas, 0),
     };
   };
+  // a bolha de cada área cresce com as pessoas atendidas (entre 56 e 84 px)
+  const pessoasArea = ATUACAO.map(a => dadosArea(a).pessoas);
+  const maxP = Math.max(1, ...pessoasArea);
+  const tam = i => Math.round(56 + 28 * Math.sqrt(pessoasArea[i] / maxP));
+
+  const ys = serie.pessoasAcumuladas;
+  const meio = Math.floor(ys.length / 2);
+  const tile = (f, i) => {
+    const p = projetos.get(f.projetoId);
+    return `<a class="inst-foto" href="#/projetos/${esc(p.id)}" tabindex="${i < fotos.length ? 0 : -1}"${i < fotos.length ? '' : ' aria-hidden="true"'}>
+      <img data-foto="${esc(f.id)}" alt="${esc(f.titulo.split(' — ')[0])}" loading="lazy"><span class="leg"><b>${esc(p.nome)}</b><span>${esc(p.area)}</span></span></a>`;
+  };
+  const metade = Math.ceil(fotos.length / 2);
+  const fileiras = [fotos.slice(0, metade), fotos.slice(metade)].filter(f => f.length);
 
   main.innerHTML = `
   <div class="inst" id="inst">
-    <section class="lamina inst-abertura" data-titulo="Abertura" aria-labelledby="inst-h1">
+    <section class="lamina escura inst-abertura" data-titulo="Abertura" aria-labelledby="inst-h1">
+      <div class="aurora" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
       <div class="inst-abertura-txt">
         <img class="inst-logo" src="img/logo-instituto.webp" alt="${esc(INSTITUTO.nome)} — ${esc(INSTITUTO.lema)}" width="720" height="636">
-        <div class="inst-eyebrow">Quadro institucional</div>
-        <h1 id="inst-h1">${esc(INSTITUTO.nome)}</h1>
-        <p class="inst-proposito" aria-label="${esc(proposito.texto)}">${palavras(proposito.texto)}</p>
+        <div class="inst-eyebrow">Quadro institucional · ${esc(INSTITUTO.lema)}</div>
+        <h1 id="inst-h1" class="sr">${esc(INSTITUTO.nome)}</h1>
+        <p class="inst-proposito" aria-label="${esc(prop.texto)}">${proposito(prop)}</p>
         <div class="inst-acoes">
           <button type="button" class="inst-bt primario" id="inst-apresentar">${svg('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>')}Modo apresentação</button>
           <button type="button" class="inst-bt" id="inst-imprimir">${svg('<path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/>')}Imprimir / PDF</button>
         </div>
       </div>
       <div class="inst-marca" aria-hidden="true"><img src="img/icone.png" alt=""><span class="anel a1"></span><span class="anel a2"></span><span class="anel a3"></span></div>
+      <div class="inst-placar">
+        <div><b>${contar(ind.beneficiados)}</b><span>vidas alcançadas pelos projetos</span></div>
+        <div><b>${contar(ind.projetosNoPeriodo)}</b><span>projetos publicados</span></div>
+        <div><b>${contar(ind.municipios)}</b><span>municípios atendidos</span></div>
+        <div><b>${contar(ind.aplicado, 'moeda')}</b><span>aplicados nos projetos${anos ? ` · ${esc(anos)}` : ''}</span></div>
+      </div>
+      <button type="button" class="inst-descer" data-ir-para="1" aria-label="Ir para a próxima lâmina">Conheça o Instituto ${SETA}</button>
     </section>
 
     <section class="lamina" data-titulo="Propósito, missão e visão" aria-labelledby="inst-pilares">
@@ -95,20 +152,42 @@ export async function render(main) {
 
     <section class="lamina" data-titulo="Atuação" aria-labelledby="inst-atuacao">
       <div class="inst-cab"><div class="inst-eyebrow">Atuação</div><h2 id="inst-atuacao">Onde o Instituto atua — e o que já entregou</h2>
-        <p>No centro, quem é atendido. Toque numa área para ver os projetos e os números publicados neste portal${anos ? ` (${esc(anos)})` : ''}.</p></div>
+        <p>No centro, quem é atendido; cada área cresce com as pessoas que alcançou. Toque numa área para ver os projetos e os números publicados${anos ? ` (${esc(anos)})` : ''}.</p></div>
       <div class="inst-atuacao">
         <div class="inst-orbita" role="group" aria-label="Áreas de atuação">
           <svg class="inst-orbita-fios" viewBox="0 0 400 400" aria-hidden="true"><circle cx="200" cy="200" r="150"/><circle class="gira" cx="200" cy="200" r="150"/>
-            ${ATUACAO.map((_, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / ATUACAO.length; return `<line x1="200" y1="200" x2="${(200 + 150 * Math.cos(a)).toFixed(1)}" y2="${(200 + 150 * Math.sin(a)).toFixed(1)}"/>`; }).join('')}</svg>
+            ${ATUACAO.map((_, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / ATUACAO.length; const x = (200 + 150 * Math.cos(a)).toFixed(1), y = (200 + 150 * Math.sin(a)).toFixed(1);
+              return `<line x1="200" y1="200" x2="${x}" y2="${y}"/><line class="pulso" style="--d:${i * 0.55}s" x1="200" y1="200" x2="${x}" y2="${y}" pathLength="100"/>`; }).join('')}</svg>
           <div class="inst-centro"><img src="img/icone.png" alt=""><span class="r">Público</span><b>${esc(PUBLICO)}</b></div>
           ${ATUACAO.map((a, i) => { const ang = -90 + i * 360 / ATUACAO.length;
-            return `<button type="button" class="inst-no${i === 0 ? ' on' : ''}" aria-pressed="${i === 0}" data-area="${a.k}" style="--ang:${ang}deg;--cor:${COR_ATUACAO[a.k]}"><span class="bolha">${svg(IC_AREA[a.k], 1.8)}</span><span class="nome">${esc(a.titulo)}</span></button>`; }).join('')}
+            return `<button type="button" class="inst-no${i === 0 ? ' on' : ''}" aria-pressed="${i === 0}" data-area="${a.k}" style="--ang:${ang}deg;--cor:${COR_ATUACAO[a.k]};--tam:${tam(i)}px"><span class="bolha">${svg(IC_AREA[a.k], 1.8)}</span><span class="nome">${esc(a.titulo)}</span></button>`; }).join('')}
         </div>
         <div class="inst-area" id="inst-area" aria-live="polite"></div>
       </div>
     </section>
 
-    <section class="lamina" data-titulo="Valores" aria-labelledby="inst-valores">
+    ${ys.length > 1 && ys[ys.length - 1] ? `
+    <section class="lamina escura inst-tempo" data-titulo="A transformação no tempo" aria-labelledby="inst-tempo">
+      <div class="inst-cab"><div class="inst-eyebrow">A transformação no tempo</div><h2 id="inst-tempo">Mês a mês, mais vidas alcançadas</h2>
+        <p>Pessoas atendidas pelos projetos, somadas desde o primeiro mês publicado.</p></div>
+      <div class="inst-tempo-corpo">
+        <div class="inst-tempo-num"><b>${contar(ys[ys.length - 1])}</b><span>pessoas até ${esc(rotuloMes(serie.chaves[serie.chaves.length - 1], true))}</span>
+          <div class="marcos"><div><b>${fmtNum(ys[meio])}</b><span>em ${esc(rotuloMes(serie.chaves[meio], true))}</span></div><div><b>${fmtNum(ys[0])}</b><span>em ${esc(rotuloMes(serie.chaves[0], true))}</span></div></div></div>
+        <div class="inst-tempo-graf">${curva(serie)}
+          <div class="eixo"><span>${esc(rotuloMes(serie.chaves[0], true))}</span><span>${esc(rotuloMes(serie.chaves[meio], true))}</span><span>${esc(rotuloMes(serie.chaves[serie.chaves.length - 1], true))}</span></div></div>
+      </div>
+    </section>` : ''}
+
+    ${fotos.length ? `
+    <section class="lamina inst-mosaico" data-titulo="Quem é transformado" aria-labelledby="inst-fotos">
+      <div class="inst-cab"><div class="inst-eyebrow">${esc(INSTITUTO.lema)}</div><h2 id="inst-fotos">Quem é transformado</h2>
+        <p>Fotos publicadas dos projetos. Cada uma abre o projeto de onde veio.</p></div>
+      <div class="inst-fileiras">
+        ${fileiras.map((f, j) => `<div class="inst-fileira${j ? ' volta' : ''}"><div class="trilho">${[...f, ...f].map((x, i) => tile(x, i < f.length ? 0 : fotos.length)).join('')}</div></div>`).join('')}
+      </div>
+    </section>` : ''}
+
+    <section class="lamina escura" data-titulo="Valores" aria-labelledby="inst-valores">
       <div class="inst-cab"><div class="inst-eyebrow">Valores</div><h2 id="inst-valores">O que guia cada decisão</h2></div>
       <ol class="inst-valores">
         ${VALORES.map((v, i) => `
@@ -142,6 +221,27 @@ export async function render(main) {
   const raiz = main.querySelector('#inst');
   const fim = new AbortController();
   const ouvir = { signal: fim.signal };
+  const calmo = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- fotos dos projetos (vêm do banco local)
+  for (const img of raiz.querySelectorAll('img[data-foto]')) {
+    const d = fotos.find(f => f.id === img.dataset.foto);
+    urlImagem(d).then(u => { if (u) img.src = u; });
+  }
+
+  // --- números que contam do zero quando a lâmina aparece
+  const animarContas = lamina => {
+    if (calmo) return;
+    for (const el of lamina.querySelectorAll('.conta')) {
+      const alvo = Number(el.dataset.conta), f = FMT[el.dataset.tipo], t0 = performance.now(), dur = 1500;
+      const passo = t => {
+        const k = Math.min(1, (t - t0) / dur), e = 1 - (1 - k) ** 3;
+        el.textContent = f(k < 1 ? (el.dataset.tipo === 'num' ? Math.round(alvo * e) : alvo * e) : alvo);
+        if (k < 1 && !fim.signal.aborted) requestAnimationFrame(passo);
+      };
+      requestAnimationFrame(passo);
+    }
+  };
 
   // --- propósito, missão e visão: um em destaque por vez
   raiz.querySelectorAll('.inst-pilar').forEach(bt => bt.addEventListener('click', () => {
@@ -150,36 +250,56 @@ export async function render(main) {
 
   // --- atuação: a área escolhida mostra os números publicados
   const painel = raiz.querySelector('#inst-area');
+  const nos = [...raiz.querySelectorAll('.inst-no')];
   const mostrarArea = k => {
     const a = ATUACAO.find(x => x.k === k);
     const d = dadosArea(a);
     const juntas = a.areasPortal.includes('Cultura e esporte');
     const lista = d.projetos.slice(0, 5).map(p => `<li><a href="#/projetos/${esc(p.id)}">${esc(p.nome)}</a><span>${esc(p.status)}</span></li>`).join('');
+    nos.forEach(x => { x.classList.toggle('on', x.dataset.area === k); x.setAttribute('aria-pressed', x.dataset.area === k); });
     painel.style.setProperty('--cor', COR_ATUACAO[k]);
+    painel.classList.remove('troca'); void painel.offsetWidth; painel.classList.add('troca');
     painel.innerHTML = `
       <div class="inst-area-cab"><span class="bolha">${svg(IC_AREA[k], 1.8)}</span><div><div class="inst-eyebrow">Área de atuação</div><h3>${esc(a.titulo)}</h3></div></div>
       ${d.projetos.length ? `
       <div class="inst-area-num">
-        <div><b>${fmtNum(d.projetos.length)}</b><span>projeto${d.projetos.length === 1 ? '' : 's'}</span></div>
-        <div><b>${fmtNum(d.pessoas)}</b><span>pessoas atendidas</span></div>
-        <div><b>${fmtMoedaCurta(d.investido)}</b><span>investidos</span></div>
-        <div><b>${fmtNum(d.horas)}</b><span>horas de atividade</span></div>
+        <div><b>${contar(d.projetos.length)}</b><span>projeto${d.projetos.length === 1 ? '' : 's'}</span></div>
+        <div><b>${contar(d.pessoas)}</b><span>pessoas atendidas</span></div>
+        <div><b>${contar(d.investido, 'moeda')}</b><span>investidos</span></div>
+        <div><b>${contar(d.horas)}</b><span>horas de atividade</span></div>
       </div>
       <ul class="inst-area-proj">${lista}</ul>
       ${d.projetos.length > 5 ? `<a class="mais" href="#/projetos">Ver os ${fmtNum(d.projetos.length)} projetos →</a>` : ''}
       ${juntas ? '<p class="nota">No portal, Cultura e Esporte são cadastrados numa área só (Cultura e esporte): os números das duas são os mesmos.</p>' : ''}`
       : `<p class="vazio">Ainda não há projeto publicado nesta área.</p>`}`;
+    animarContas(painel);
   };
-  raiz.querySelectorAll('.inst-no').forEach(bt => bt.addEventListener('click', () => {
-    raiz.querySelectorAll('.inst-no').forEach(x => { x.classList.toggle('on', x === bt); x.setAttribute('aria-pressed', x === bt); });
-    mostrarArea(bt.dataset.area);
-  }));
+  // passeio automático pelas áreas enquanto a lâmina está na tela e ninguém escolheu uma
+  let passeio = null, escolheu = false;
+  const pararPasseio = () => { clearInterval(passeio); passeio = null; };
+  nos.forEach(bt => bt.addEventListener('click', () => { escolheu = true; pararPasseio(); mostrarArea(bt.dataset.area); }));
   mostrarArea(ATUACAO[0].k);
+  const orbita = raiz.querySelector('.inst-orbita');
+  orbita.addEventListener('pointerenter', pararPasseio);
+  orbita.addEventListener('focusin', pararPasseio);
+  const comecarPasseio = () => {
+    if (calmo || escolheu || passeio) return;
+    passeio = setInterval(() => {
+      if (document.hidden) return;
+      const i = nos.findIndex(x => x.classList.contains('on'));
+      mostrarArea(nos[(i + 1) % nos.length].dataset.area);
+    }, 4200);
+  };
+  fim.signal.addEventListener('abort', pararPasseio);
 
-  // --- cada lâmina entra quando aparece na tela (sem animação para quem pediu menos movimento)
+  // --- cada lâmina entra quando aparece na tela
   const laminas = [...raiz.querySelectorAll('.lamina')];
+  const lamAtuacao = orbita.closest('.lamina');
   if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visivel'); io.unobserve(e.target); } }), { threshold: 0.18 });
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.target === lamAtuacao) { if (e.isIntersecting) comecarPasseio(); else pararPasseio(); }
+      if (e.isIntersecting && !e.target.classList.contains('visivel')) { e.target.classList.add('visivel'); animarContas(e.target); }
+    }), { threshold: 0.2 });
     laminas.forEach(l => io.observe(l));
     fim.signal.addEventListener('abort', () => io.disconnect());
   } else laminas.forEach(l => l.classList.add('visivel'));
@@ -190,9 +310,10 @@ export async function render(main) {
   let atual = 0;
   const ir = i => {
     atual = Math.max(0, Math.min(laminas.length - 1, i));
-    laminas[atual].scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    laminas[atual].scrollIntoView({ behavior: calmo ? 'auto' : 'smooth', block: 'start' });
     pos.textContent = `${atual + 1} / ${laminas.length} · ${laminas[atual].dataset.titulo}`;
   };
+  raiz.querySelector('.inst-descer').addEventListener('click', () => ir(1));
   const apresentando = () => document.documentElement.classList.contains('apresentando');
   const entrar = () => {
     document.documentElement.classList.add('apresentando');
