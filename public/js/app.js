@@ -11,6 +11,7 @@ import { iniciarMenu, marcarAtual } from './ui/menu-siga.js';
 
 const PAGINAS = {
   '': () => import('./paginas/inicio.js'),
+  institucional: () => import('./paginas/institucional.js'),
   receitas: () => import('./paginas/receitas.js'),
   despesas: () => import('./paginas/despesas.js'),
   projetos: () => import('./paginas/projetos.js'),
