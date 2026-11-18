@@ -506,7 +506,6 @@ td .sub { display: block; color: var(--muted); font-size: 12px; }
 .inst-cab h2 { font-size: clamp(1.6rem, 1.05rem + 1.6vw, 2.6rem); letter-spacing: -.3px; margin: 6px 0 8px; }
 .inst-cab p { color: var(--grey); margin: 0; font-size: 14.5px; }
 .lamina > * { position: relative; z-index: 1; }
-.lamina .inst-cab, .lamina .inst-pilares, .lamina .inst-atuacao, .lamina .inst-valores, .lamina .inst-kpis, .lamina .inst-tempo-corpo { opacity: 1; }
 .visivel .inst-cab { animation: inst-subir .7s cubic-bezier(.2,.7,.2,1) both; }
 
 /* abertura: aurora nas cores da logo, o propósito em letra grande, o placar contando */
@@ -565,27 +564,109 @@ td .sub { display: block; color: var(--muted); font-size: 12px; }
 @keyframes inst-quica { 50% { transform: translateY(4px); } }
 .inst-descer:hover { color: #fff; }
 
-/* propósito, missão e visão: o escolhido cresce, os outros recolhem */
-.inst-pilares { display: flex; gap: 14px; align-items: stretch; min-height: 300px; }
-.inst-pilar { flex: 1 1 0; min-width: 0; text-align: left; display: flex; flex-direction: column; gap: 6px; cursor: pointer; font: inherit; color: var(--ink);
-  background: var(--sunk); border: 1px solid var(--line); border-radius: 16px; padding: 22px 22px 24px; position: relative; overflow: hidden;
-  transition: flex-grow .55s cubic-bezier(.2,.7,.2,1), background .3s, border-color .3s, box-shadow .3s, transform .3s; }
-.inst-pilar:hover { border-color: var(--leaf); transform: translateY(-2px); }
-.inst-pilar .ic { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; background: var(--leaf-soft); color: var(--leaf); margin-bottom: 8px; }
-.inst-pilar .ic svg { width: 23px; height: 23px; }
-.inst-pilar .perg { font-size: 11.5px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: var(--muted); }
-.inst-pilar .tit { font-family: var(--f-display); font-weight: 700; font-size: 1.55rem; line-height: 1.1; }
-.inst-pilar .txt { color: var(--grey); font-size: 13.5px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; margin-top: auto; }
-.inst-pilar mark { background: none; color: inherit; font-weight: 600; }
-.inst-pilar.on { flex-grow: 2.6; background: linear-gradient(150deg, #02175A, #0051BF 65%, #007BDF); border-color: transparent; color: #fff; box-shadow: 0 20px 44px rgba(0,37,125,.32); }
-.inst-pilar.on::after { content: ""; position: absolute; right: -60px; bottom: -60px; width: 220px; height: 220px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(38,186,242,.45), transparent 70%); }
-.inst-pilar.on .ic { background: rgba(255,255,255,.14); color: #fff; }
-.inst-pilar.on .perg { color: #9FD9F7; }
-.inst-pilar.on .tit { font-size: clamp(1.8rem, 1.2rem + 1.4vw, 2.6rem); }
-.inst-pilar.on .txt { -webkit-line-clamp: unset; color: #E4EDFA; font-family: var(--f-display); font-weight: 600; font-size: clamp(1.2rem, .9rem + .9vw, 1.75rem); line-height: 1.28; }
-.inst-pilar.on mark { color: #fff; background: linear-gradient(0deg, rgba(255,175,2,.6) 0 .3em, transparent .3em); }
-@media (max-width: 800px) { .inst-pilares { flex-direction: column; min-height: 0; } .inst-pilar .txt { -webkit-line-clamp: unset; } }
+/* propósito, missão e visão: a lista à esquerda, o palco à direita com a frase em letra de editorial */
+.inst-pilares { display: grid; grid-template-columns: minmax(240px, 330px) minmax(0, 1fr); gap: clamp(14px, 2vw, 28px); align-items: stretch; }
+.inst-pil-lista { display: flex; flex-direction: column; gap: 10px; }
+.inst-pil-aba { position: relative; flex: 1; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; text-align: left;
+  padding: 18px 18px 18px 22px; border-radius: 16px; border: 1px solid var(--line); background: var(--sunk); color: var(--ink); font: inherit; cursor: pointer;
+  overflow: hidden; transition: background .3s, border-color .3s, box-shadow .3s, transform .3s; }
+.inst-pil-aba::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 4px; border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, var(--logo-ciano), var(--logo-royal)); transform: scaleY(0); transition: transform .35s cubic-bezier(.2,.7,.2,1); }
+.inst-pil-aba:hover { border-color: color-mix(in srgb, var(--leaf) 45%, var(--line)); transform: translateX(3px); }
+.inst-pil-aba .n { font-family: var(--f-display); font-weight: 700; font-size: 1.9rem; line-height: 1; color: color-mix(in srgb, var(--muted) 45%, transparent);
+  font-variant-numeric: tabular-nums; transition: color .3s; }
+.inst-pil-aba .t { display: grid; gap: 3px; min-width: 0; }
+.inst-pil-aba .t b { font-family: var(--f-display); font-weight: 600; font-size: 1.45rem; line-height: 1.05; letter-spacing: -.2px; }
+.inst-pil-aba .t small { font-size: 11px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase; color: var(--muted); }
+.inst-pil-aba .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: var(--muted); background: transparent;
+  border: 1px solid var(--line); transition: all .3s; }
+.inst-pil-aba .ic svg { width: 20px; height: 20px; }
+.inst-pil-aba.on { background: var(--card); border-color: color-mix(in srgb, var(--leaf) 35%, var(--line)); box-shadow: 0 14px 34px rgba(0,37,125,.12); transform: none; }
+.inst-pil-aba.on::before { transform: scaleY(1); }
+.inst-pil-aba.on .n { color: var(--leaf); }
+.inst-pil-aba.on .ic { background: var(--leaf); border-color: var(--leaf); color: #fff; }
+.inst-pil-aba:focus-visible { outline: 3px solid color-mix(in srgb, var(--leaf) 55%, transparent); outline-offset: 2px; }
+
+.inst-palco { position: relative; overflow: hidden; isolation: isolate; border-radius: 22px; min-height: 380px; color: #fff;
+  padding: clamp(26px, 3.2vw, 56px) clamp(26px, 3.6vw, 64px); display: flex; flex-direction: column;
+  background: radial-gradient(70% 90% at 100% 100%, rgba(38,186,242,.42) 0%, transparent 60%),
+    radial-gradient(60% 80% at 0% 0%, rgba(0,123,223,.5) 0%, transparent 60%), linear-gradient(140deg, #020C3A 0%, #02175A 50%, #00307F 100%);
+  box-shadow: 0 26px 60px rgba(2,17,79,.32); }
+.inst-palco::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: repeating-linear-gradient(-62deg, rgba(255,255,255,.035) 0 1px, transparent 1px 12px); }
+.inst-palco .fundo-n { position: absolute; right: clamp(14px, 3vw, 44px); bottom: -.18em; z-index: -1; font-family: var(--f-display); font-weight: 700;
+  font-size: clamp(9rem, 6rem + 9vw, 17rem); line-height: 1; letter-spacing: -6px; color: transparent; -webkit-text-stroke: 1.5px rgba(124,214,251,.22);
+  background: linear-gradient(180deg, rgba(124,214,251,.16), transparent 75%); -webkit-background-clip: text; background-clip: text; user-select: none; }
+.inst-palco .topo { display: flex; align-items: center; gap: 12px; }
+.inst-palco .topo .ic { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.16); color: #7CD6FB; }
+.inst-palco .topo .ic svg { width: 22px; height: 22px; }
+.inst-palco .perg { font-size: 12px; font-weight: 700; letter-spacing: 2.2px; text-transform: uppercase; color: #7CD6FB; }
+.inst-palco h3 { color: #fff; font-family: var(--f-display); font-weight: 700; font-size: clamp(2.2rem, 1.4rem + 2.2vw, 3.6rem); line-height: 1; letter-spacing: -.6px; margin: 22px 0 18px; }
+.inst-palco .frase { margin: auto 0 0; max-width: 34ch; font-family: var(--f-display); font-weight: 500; font-size: clamp(1.35rem, .95rem + 1.25vw, 2.25rem);
+  line-height: 1.24; letter-spacing: -.1px; color: rgba(233,240,250,.92); text-wrap: pretty; }
+.inst-palco .frase .pal { display: inline-block; }
+.inst-palco .frase .k { color: #8FDDFC; font-weight: 600; }
+.inst-palco .passos { display: flex; gap: 6px; margin-top: 30px; }
+.inst-palco .passos i { width: 22px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.2); transition: width .35s, background .35s; }
+.inst-palco .passos i.on { width: 46px; background: linear-gradient(90deg, #26BAF2, #FFAF02); }
+.inst-palco.troca .frase .pal { animation: inst-palavra .6s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i) * 28ms); }
+.inst-palco.troca h3, .inst-palco.troca .topo { animation: inst-entra .5s cubic-bezier(.2,.7,.2,1) both; }
+.inst-palco.troca .fundo-n { animation: inst-aparece .9s ease both; }
+@media (max-width: 900px) {
+  .inst-pilares { grid-template-columns: 1fr; }
+  .inst-pil-lista { flex-direction: row; overflow-x: auto; gap: 8px; scrollbar-width: none; }
+  .inst-pil-aba { flex: 1 0 auto; grid-template-columns: auto auto; padding: 12px 14px 12px 16px; }
+  .inst-pil-aba .ic { display: none; }
+  .inst-pil-aba .n { font-size: 1.3rem; }
+  .inst-pil-aba .t b { font-size: 1.15rem; }
+  .inst-pil-aba::before { top: auto; bottom: 0; left: 12px; right: 12px; width: auto; height: 3px; border-radius: 3px 3px 0 0; transform: scaleX(0); }
+  .inst-pil-aba.on::before { transform: scaleX(1); }
+  .inst-palco { min-height: 0; }
+}
+
+/* pilares em movimento: a lista entra em sequência, a aba ativa tem borda que gira e a barra do tempo até a
+   próxima; o palco inclina com o mouse (--rx/--ry vêm do JS), tem luz passando e o fundo respira */
+@property --inst-giro { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.visivel .inst-pil-aba { animation: inst-entra-esq .6s cubic-bezier(.2,.7,.2,1) both; }
+.visivel .inst-pil-aba:nth-child(2) { animation-delay: .12s; } .visivel .inst-pil-aba:nth-child(3) { animation-delay: .24s; }
+@keyframes inst-entra-esq { from { opacity: 0; transform: translateX(-26px); } to { opacity: 1; transform: none; } }
+.inst-pil-aba .ic { transition: transform .35s cubic-bezier(.3,1.6,.4,1), background .3s, color .3s, border-color .3s; }
+.inst-pil-aba:hover .ic { transform: scale(1.15) rotate(-8deg); }
+.inst-pil-aba.on::after { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none;
+  background: conic-gradient(from var(--inst-giro), #26BAF2, #0051BF 30%, transparent 45%, transparent 70%, #FFAF02 85%, #26BAF2);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: inst-giro 4s linear infinite; }
+@keyframes inst-giro { to { --inst-giro: 360deg; } }
+.inst-pil-aba.on .ic { animation: inst-pulsa 2.4s ease-in-out infinite; }
+@keyframes inst-pulsa { 50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--leaf) 18%, transparent); } }
+.inst-pil-aba .tempo { position: absolute; left: 22px; right: 18px; bottom: 9px; height: 3px; border-radius: 3px; background: color-mix(in srgb, var(--leaf) 12%, transparent); overflow: hidden; opacity: 0; }
+.inst-pil-aba .tempo i { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: linear-gradient(90deg, #26BAF2, #FFAF02); }
+.inst-pilares.rodando .inst-pil-aba.on .tempo { opacity: 1; }
+.inst-pilares.rodando .inst-pil-aba.on .tempo i { animation: inst-enche var(--inst-ciclo, 7s) linear both; }
+@keyframes inst-enche { to { transform: scaleX(1); } }
+
+.inst-pilares { perspective: 1400px; }
+.inst-palco { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transform-style: preserve-3d; transition: transform .25s ease-out, box-shadow .3s; will-change: transform; }
+.inst-palco:hover { box-shadow: 0 34px 70px rgba(2,17,79,.4); }
+.inst-palco::before { content: ""; position: absolute; z-index: -1; width: 60%; height: 90%; right: -10%; top: -20%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(38,186,242,.38), transparent 65%); filter: blur(20px); }
+.visivel .inst-palco::before { animation: inst-deriva2 14s ease-in-out infinite alternate; }
+.inst-palco .brilho { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; border-radius: inherit; }
+.inst-palco .brilho::after { content: ""; position: absolute; top: -20%; bottom: -20%; width: 28%; left: -40%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.13) 45%, rgba(255,255,255,.2) 50%, rgba(255,255,255,.13) 55%, transparent); transform: skewX(-18deg); }
+.visivel .inst-palco .brilho::after { animation: inst-varre 5.5s ease-in-out infinite 1.2s; }
+@keyframes inst-varre { 0% { left: -40%; } 38%, 100% { left: 130%; } }
+.inst-palco > :not(.fundo-n):not(.brilho) { position: relative; z-index: 1; transform: translateZ(30px); }
+.visivel .inst-palco .fundo-n { animation: inst-flutuar 7s ease-in-out infinite; }
+.inst-palco.troca .fundo-n { animation: inst-numero .9s cubic-bezier(.2,.7,.2,1) both, inst-flutuar 7s ease-in-out infinite .9s; }
+@keyframes inst-numero { from { opacity: 0; transform: translateY(40px) scale(.9); } to { opacity: 1; transform: none; } }
+.inst-palco .frase .k { text-shadow: 0 0 18px rgba(38,186,242,.55); }
+.visivel .inst-palco .frase .k { animation: inst-palavra .6s cubic-bezier(.2,.7,.2,1) both, inst-brilha 3.2s ease-in-out infinite 1s; animation-delay: calc(var(--i) * 28ms), calc(var(--i) * 90ms + 1s); }
+@keyframes inst-brilha { 50% { color: #C9F0FF; text-shadow: 0 0 26px rgba(38,186,242,.9); } }
+.inst-palco .topo .ic { transition: transform .4s; }
+.inst-palco.troca .topo .ic { animation: inst-gira-ic .7s cubic-bezier(.3,1.5,.4,1) both; }
+@keyframes inst-gira-ic { from { transform: rotate(-90deg) scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
 
 /* atuação: o público no centro, as áreas em órbita, pulsos correndo do centro para cada área */
 .inst-atuacao { display: grid; grid-template-columns: minmax(280px, 480px) minmax(0, 1fr); gap: clamp(18px, 3vw, 52px); align-items: center; }
@@ -752,8 +833,7 @@ html.apresentando .inst-cab h2 { font-size: clamp(2.1rem, 1.3rem + 2.4vw, 3.4rem
 @media print {
   .inst-acoes, .inst-controle, .inst-descer, .aurora { display: none !important; }
   .lamina { break-inside: avoid; break-after: page; box-shadow: none; }
-  .lamina.escura, .inst-pilar.on { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .inst-pilar .txt { -webkit-line-clamp: unset; }
+  .lamina.escura, .inst-palco { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .inst-fileira .trilho { flex-wrap: wrap; width: auto; }
 }
 

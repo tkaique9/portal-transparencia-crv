@@ -41,12 +41,21 @@ const SETA = svg('<path d="m6 9 6 6 6-6"/>', 2.2);
 const FMT = { num: fmtNum, moeda: fmtMoedaCurta };
 const contar = (v, tipo = 'num') => `<span class="conta" data-conta="${Number(v) || 0}" data-tipo="${tipo}">${esc(FMT[tipo](v))}</span>`;
 
-/** Texto do pilar com os trechos de destaque marcados (o texto vem do quadro, escapado antes de marcar). */
-function comDestaques(p) {
-  let t = esc(p.texto);
-  for (const d of p.destaques) t = t.replace(esc(d), `<mark>${esc(d)}</mark>`);
-  return t;
+/** A frase do pilar palavra a palavra (entram em sequência no palco); as dos trechos de destaque ganham só cor. */
+function frase(p) {
+  const marcadas = new Set();
+  for (const d of p.destaques) {
+    const ini = p.texto.indexOf(d);
+    if (ini >= 0) for (let c = ini; c < ini + d.length; c++) marcadas.add(c);
+  }
+  let pos = 0;
+  return p.texto.split(' ').map((w, i) => {
+    const k = marcadas.has(pos);
+    pos += w.length + 1;
+    return `<span class="pal${k ? ' k' : ''}" style="--i:${i}">${esc(w)}</span>`;
+  }).join(' ');
 }
+const pilarNum = i => String(i + 1).padStart(2, '0');
 
 /** O propósito palavra a palavra (entram em sequência); as dos destaques levam o degradê da logo. */
 function proposito(p) {
@@ -139,14 +148,17 @@ export async function render(main) {
     <section class="lamina" data-titulo="Propósito, missão e visão" aria-labelledby="inst-pilares">
       <div class="inst-cab"><div class="inst-eyebrow">Identidade</div><h2 id="inst-pilares">Por que existimos, o que fazemos e aonde vamos</h2>
         <p>Escolha um dos três para ler em destaque.</p></div>
-      <div class="inst-pilares" role="group" aria-label="Propósito, missão e visão">
-        ${PILARES.map((p, i) => `
-        <button type="button" class="inst-pilar${i === 0 ? ' on' : ''}" aria-pressed="${i === 0}" data-pilar="${p.k}">
-          <span class="ic">${svg(IC_PILAR[p.k])}</span>
-          <span class="perg">${esc(p.pergunta)}</span>
-          <span class="tit">${esc(p.titulo)}</span>
-          <span class="txt">${comDestaques(p)}</span>
-        </button>`).join('')}
+      <div class="inst-pilares">
+        <div class="inst-pil-lista" role="tablist" aria-label="Propósito, missão e visão" aria-orientation="vertical">
+          ${PILARES.map((p, i) => `
+          <button type="button" role="tab" class="inst-pil-aba${i === 0 ? ' on' : ''}" id="inst-aba-${p.k}" aria-selected="${i === 0}" aria-controls="inst-palco" tabindex="${i === 0 ? 0 : -1}" data-pilar="${p.k}">
+            <span class="n">${pilarNum(i)}</span>
+            <span class="t"><b>${esc(p.titulo)}</b><small>${esc(p.pergunta)}</small></span>
+            <span class="ic">${svg(IC_PILAR[p.k])}</span>
+            <span class="tempo" aria-hidden="true"><i></i></span>
+          </button>`).join('')}
+        </div>
+        <div class="inst-palco" id="inst-palco" role="tabpanel" aria-live="polite"></div>
       </div>
     </section>
 
@@ -243,10 +255,60 @@ export async function render(main) {
     }
   };
 
-  // --- propósito, missão e visão: um em destaque por vez
-  raiz.querySelectorAll('.inst-pilar').forEach(bt => bt.addEventListener('click', () => {
-    raiz.querySelectorAll('.inst-pilar').forEach(x => { x.classList.toggle('on', x === bt); x.setAttribute('aria-pressed', x === bt); });
-  }));
+  // --- propósito, missão e visão: a aba escolhida sobe ao palco (setas trocam entre as três)
+  const abas = [...raiz.querySelectorAll('.inst-pil-aba')];
+  const palco = raiz.querySelector('#inst-palco');
+  const mostrarPilar = (k, foco = false) => {
+    const i = PILARES.findIndex(p => p.k === k), p = PILARES[i];
+    abas.forEach(a => { const on = a.dataset.pilar === k; a.classList.toggle('on', on); a.setAttribute('aria-selected', on); a.tabIndex = on ? 0 : -1; if (on && foco) a.focus(); });
+    palco.setAttribute('aria-labelledby', `inst-aba-${k}`);
+    palco.innerHTML = `
+      <span class="brilho" aria-hidden="true"></span>
+      <span class="fundo-n" aria-hidden="true">${pilarNum(i)}</span>
+      <div class="topo"><span class="ic">${svg(IC_PILAR[k])}</span><span class="perg">${esc(p.pergunta)}</span></div>
+      <h3>${esc(p.titulo)}</h3>
+      <p class="frase">${frase(p)}</p>
+      <div class="passos" aria-hidden="true">${PILARES.map((_, j) => `<i class="${j === i ? 'on' : ''}"></i>`).join('')}</div>`;
+    palco.classList.remove('troca'); void palco.offsetWidth; palco.classList.add('troca');
+  };
+  // passeio pelos três enquanto ninguém escolhe um: a barra da aba ativa enche e o palco passa para o próximo
+  const caixa = raiz.querySelector('.inst-pilares');
+  const CICLO = 7000;
+  let rodaPilar = null;
+  const pararPilares = () => { clearInterval(rodaPilar); rodaPilar = null; caixa.classList.remove('rodando'); };
+  const rodarPilares = () => {
+    if (calmo || rodaPilar || caixa.dataset.escolheu) return;
+    caixa.style.setProperty('--inst-ciclo', `${CICLO}ms`);
+    caixa.classList.add('rodando');
+    rodaPilar = setInterval(() => {
+      if (document.hidden) return;
+      const i = abas.findIndex(a => a.classList.contains('on'));
+      mostrarPilar(abas[(i + 1) % abas.length].dataset.pilar);
+      // reinicia a barra da nova aba
+      caixa.classList.remove('rodando'); void caixa.offsetWidth; caixa.classList.add('rodando');
+    }, CICLO);
+  };
+  fim.signal.addEventListener('abort', pararPilares);
+  // o palco inclina na direção do mouse
+  if (!calmo) {
+    palco.addEventListener('pointermove', e => {
+      const r = palco.getBoundingClientRect();
+      palco.style.setProperty('--ry', `${((e.clientX - r.left) / r.width - .5) * 7}deg`);
+      palco.style.setProperty('--rx', `${(.5 - (e.clientY - r.top) / r.height) * 6}deg`);
+    });
+    palco.addEventListener('pointerleave', () => { palco.style.setProperty('--rx', '0deg'); palco.style.setProperty('--ry', '0deg'); });
+  }
+  abas.forEach((a, i) => {
+    a.addEventListener('click', () => { caixa.dataset.escolheu = '1'; pararPilares(); mostrarPilar(a.dataset.pilar); });
+    a.addEventListener('keydown', e => {
+      const d = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+      if (!d || document.documentElement.classList.contains('apresentando')) return;
+      e.preventDefault(); e.stopPropagation();
+      caixa.dataset.escolheu = '1'; pararPilares();
+      mostrarPilar(abas[(i + d + abas.length) % abas.length].dataset.pilar, true);
+    });
+  });
+  mostrarPilar(PILARES[0].k);
 
   // --- atuação: a área escolhida mostra os números publicados
   const painel = raiz.querySelector('#inst-area');
@@ -295,9 +357,11 @@ export async function render(main) {
   // --- cada lâmina entra quando aparece na tela
   const laminas = [...raiz.querySelectorAll('.lamina')];
   const lamAtuacao = orbita.closest('.lamina');
+  const lamPilares = caixa.closest('.lamina');
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver(es => es.forEach(e => {
       if (e.target === lamAtuacao) { if (e.isIntersecting) comecarPasseio(); else pararPasseio(); }
+      if (e.target === lamPilares) { if (e.isIntersecting) rodarPilares(); else pararPilares(); }
       if (e.isIntersecting && !e.target.classList.contains('visivel')) { e.target.classList.add('visivel'); animarContas(e.target); }
     }), { threshold: 0.2 });
     laminas.forEach(l => io.observe(l));
