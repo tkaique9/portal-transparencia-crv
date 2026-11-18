@@ -1,0 +1,114 @@
+/* Pôster A4 do quadro institucional (quadro.html, montado por js/quadro.js com dados/institucional.js).
+   Uma página só: medidas em mm, @page sem margem (o navegador não imprime cabeçalho nem rodapé).
+   Sem texto em degradê: na impressão ele deixa filetes e retângulos em volta das letras. */
+@font-face { font-family: "SIGA Inter"; src: url(fontes/inter-latin-wght-normal.woff2) format("woff2"); font-weight: 100 900; }
+@font-face { font-family: "SIGA Barlow"; src: url(fontes/barlow-condensed-latin-600-normal.woff2) format("woff2"); font-weight: 600; }
+@font-face { font-family: "SIGA Barlow"; src: url(fontes/barlow-condensed-latin-700-normal.woff2) format("woff2"); font-weight: 700; }
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 210mm; height: 297mm; }
+body { font-family: "SIGA Inter", sans-serif; color: #131C2E; -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #F4F7FC; overflow: hidden; }
+.pag { position: relative; width: 210mm; height: 297mm; overflow: hidden; }
+.d { font-family: "SIGA Barlow", sans-serif; }
+
+/* topo marinho: aurora, diagonais e o propósito */
+.topo { position: relative; height: 98mm; padding: 11mm 13mm 0; color: #fff; overflow: hidden;
+  background: radial-gradient(70% 90% at 92% 30%, rgba(14,99,214,.95) 0%, transparent 60%),
+    radial-gradient(45% 60% at 78% 85%, rgba(38,186,242,.55) 0%, transparent 65%),
+    radial-gradient(35% 45% at 40% 105%, rgba(255,175,2,.28) 0%, transparent 70%),
+    linear-gradient(135deg, #020A33 0%, #02175A 48%, #00307F 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); }
+.topo::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(-62deg, rgba(38,186,242,.09) 0 .5mm, transparent .5mm 3.6mm);
+  -webkit-mask-image: linear-gradient(90deg, transparent 30%, #000 85%); }
+.topo > * { position: relative; }
+.cab { display: flex; align-items: center; gap: 5mm; }
+.logo { height: 21mm; background: #fff; border-radius: 3mm; padding: 1.6mm 2.6mm; box-shadow: 0 2mm 6mm rgba(0,0,0,.35); }
+.cab .t { font-size: 2.5mm; font-weight: 700; letter-spacing: .9mm; text-transform: uppercase; color: #7CD6FB; }
+.cab .t b { display: block; color: #fff; font-family: "SIGA Barlow"; font-size: 6.4mm; letter-spacing: .1mm; text-transform: none; margin-top: .6mm; }
+.prop { margin-top: 7mm; width: 122mm; }
+.prop .rot { font-size: 2.4mm; font-weight: 700; letter-spacing: .8mm; text-transform: uppercase; color: #FFC233; display: flex; align-items: center; gap: 2mm; }
+.prop .rot::before { content: ""; width: 9mm; height: .6mm; background: linear-gradient(90deg, #FFAF02, transparent); }
+.prop h1 { font-family: "SIGA Barlow"; font-weight: 700; font-size: 15.5mm; line-height: .94; letter-spacing: -.3mm; margin-top: 0; text-transform: uppercase; }
+.prop .sub { margin-top: 4mm; font-size: 3.4mm; line-height: 1.45; color: #C9D8EF; max-width: 112mm; }
+.prop .sub b { color: #fff; font-weight: 600; }
+.prop h1 .k { color: #FFC233; }
+.simb { position: absolute; right: 11mm; top: 17mm; width: 66mm; height: 66mm; }
+.simb img { position: absolute; left: 50%; top: 50%; width: 27mm; transform: translate(-50%, -50%); border-radius: 6mm; box-shadow: 0 4mm 12mm rgba(0,0,0,.45), 0 0 0 2.2mm rgba(255,255,255,.07); }
+.simb svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* três pilares, em escada, sobre a borda do topo */
+.pilares { position: relative; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4.5mm; padding: 0 13mm; margin-top: -13mm; z-index: 2; }
+.pilar { position: relative; overflow: hidden; border-radius: 4.5mm; padding: 6mm 5.5mm 6mm; background: #fff; min-height: 66mm;
+  box-shadow: 0 3mm 9mm rgba(2,17,79,.14), 0 .3mm 1mm rgba(2,17,79,.08); display: flex; flex-direction: column; }
+.pilar.p1 { margin-top: 5mm; } .pilar.p2 { margin-top: 10mm; }
+.pilar.p0 { color: #fff; background: radial-gradient(90% 70% at 100% 100%, rgba(38,186,242,.55), transparent 60%), linear-gradient(150deg, #02175A, #0051BF 70%, #007BDF); }
+.pilar .num { position: absolute; right: -1mm; bottom: -6mm; font-family: "SIGA Barlow"; font-weight: 700; font-size: 34mm; line-height: 1; letter-spacing: -1mm;
+  color: transparent; -webkit-text-stroke: .35mm rgba(0,81,191,.16); }
+.pilar.p0 .num { -webkit-text-stroke-color: rgba(194,238,255,.3); }
+.pilar .pt { display: flex; align-items: center; gap: 2.2mm; position: relative; }
+.pilar .ic { width: 8.5mm; height: 8.5mm; border-radius: 2.4mm; display: grid; place-items: center; background: #E5EFFC; color: #0051BF; }
+.pilar.p0 .ic { background: rgba(255,255,255,.14); color: #fff; }
+.pilar .ic svg { width: 4.6mm; height: 4.6mm; }
+.pilar .perg { font-size: 2.2mm; font-weight: 700; letter-spacing: .5mm; text-transform: uppercase; color: #687489; }
+.pilar.p0 .perg { color: #9FD9F7; }
+.pilar h3 { position: relative; font-family: "SIGA Barlow"; font-weight: 700; font-size: 9.5mm; line-height: 1; margin: 4.5mm 0 3mm; color: #02175A; }
+.pilar.p0 h3 { color: #fff; }
+.pilar p { position: relative; font-size: 3.15mm; line-height: 1.5; color: #3D4757; }
+.pilar.p0 p { font-family: "SIGA Barlow"; font-weight: 600; font-size: 5.3mm; line-height: 1.22; color: #EAF2FD; }
+.pilar p .k { color: #0051BF; font-weight: 700; }
+.pilar.p0 p .k { color: #9BE3FF; font-weight: 700; }
+.pilar .barra { position: relative; margin-top: auto; padding-top: 4mm; }
+.pilar .barra::before { content: ""; display: block; width: 14mm; height: .9mm; border-radius: 1mm; background: linear-gradient(90deg, #26BAF2, #FFAF02); }
+
+/* atuação e valores */
+.meio { display: grid; grid-template-columns: 68mm 1fr; gap: 8mm; padding: 5mm 13mm 0; }
+.sec { font-size: 2.3mm; font-weight: 700; letter-spacing: .8mm; text-transform: uppercase; color: #0051BF; }
+.sec + h2 { font-family: "SIGA Barlow"; font-weight: 700; font-size: 7mm; line-height: 1.02; color: #02175A; margin: 1.2mm 0 3mm; }
+.orb { position: relative; width: 66mm; height: 66mm; margin-top: 1mm; }
+.orb-fios { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.orb-fios .anel { fill: none; stroke: #BCC9DC; stroke-width: .6; stroke-dasharray: 1.4 2.6; }
+.orb-fios .anel2 { fill: none; stroke: rgba(38,186,242,.35); stroke-width: .4; }
+.orb-fios .anel3 { fill: none; stroke: rgba(255,175,2,.45); stroke-width: .5; stroke-dasharray: .8 3; }
+.orb-fios .raio { stroke: #D8E0ED; stroke-width: .6; stroke-dasharray: 1.2 1.8; }
+.centro { position: absolute; left: 50%; top: 50%; width: 27mm; height: 27mm; transform: translate(-50%, -50%); border-radius: 50%; background: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3mm;
+  box-shadow: 0 0 0 2.2mm rgba(38,186,242,.12), 0 2mm 6mm rgba(2,17,79,.14); }
+.centro img { width: 8.5mm; border-radius: 2mm; margin-bottom: .8mm; }
+.centro small { font-size: 1.8mm; font-weight: 700; letter-spacing: .4mm; text-transform: uppercase; color: #687489; }
+.centro b { font-family: "SIGA Barlow"; font-size: 3.15mm; line-height: 1.1; color: #02175A; }
+.no { position: absolute; width: 0; height: 0; }
+.no .b { position: absolute; left: 0; top: 0; width: 11.5mm; height: 11.5mm; transform: translate(-50%, -50%); border-radius: 50%; display: grid; place-items: center;
+  background: var(--cor); color: #fff; box-shadow: 0 0 0 1.6mm color-mix(in srgb, var(--cor) 22%, transparent), 0 2mm 5mm color-mix(in srgb, var(--cor) 45%, transparent); }
+.no .b svg { width: 6mm; height: 6mm; }
+.no .nm { position: absolute; left: 0; top: 7.6mm; transform: translateX(-50%); white-space: nowrap; font-weight: 700; font-size: 2.6mm; color: #131C2E;
+  background: rgba(244,247,252,.92); padding: .2mm 1.2mm; border-radius: 1mm; }
+.atu p.leg { font-size: 2.7mm; color: #56617A; line-height: 1.45; margin-top: 2mm; }
+.valores { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 2.6mm; }
+.valores li { position: relative; display: flex; align-items: center; gap: 2.6mm; padding: 2.8mm 3mm; border-radius: 3mm; background: #fff; overflow: hidden;
+  box-shadow: 0 1mm 3mm rgba(2,17,79,.07); border: .25mm solid #E1E8F3; }
+.valores li::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: .8mm; background: linear-gradient(180deg, #26BAF2, #FFAF02); }
+.valores .vn { font-family: "SIGA Barlow"; font-weight: 700; font-size: 5.2mm; line-height: 1; width: 7mm; color: #7FA6DE; }
+.valores .vi { width: 7mm; height: 7mm; flex: none; border-radius: 2mm; display: grid; place-items: center; background: #E5EFFC; color: #0051BF; }
+.valores .vi svg { width: 3.9mm; height: 3.9mm; }
+.valores .vt { font-family: "SIGA Barlow"; font-weight: 600; font-size: 3.7mm; line-height: 1.1; color: #02175A; }
+
+/* rodapé marinho com o lema e o QR do portal */
+.pe { position: absolute; left: 0; right: 0; bottom: 0; height: 30mm; color: #fff; display: flex; align-items: center; gap: 7mm; padding: 6mm 13mm 0;
+  background: radial-gradient(50% 120% at 100% 100%, rgba(38,186,242,.45), transparent 60%), linear-gradient(120deg, #020A33, #02175A 55%, #0051BF);
+  clip-path: polygon(0 22%, 100% 0, 100% 100%, 0 100%); }
+.pe .lema { flex: 1; }
+.pe .lema b { display: block; font-family: "SIGA Barlow"; font-weight: 700; font-size: 8.5mm; line-height: 1; letter-spacing: .2mm; color: #fff; }
+.pe .lema b i { font-style: normal; color: #4FC4F5; }
+.pe .lema span { display: block; font-size: 2.5mm; color: #B9C8E0; margin-top: 1.5mm; letter-spacing: .2mm; }
+.pe .qr { display: flex; align-items: center; gap: 3.5mm; }
+.pe .qr .q { width: 19mm; height: 19mm; background: #fff; border-radius: 2.4mm; padding: 1.6mm; }
+.pe .qr .q svg { width: 100%; height: 100%; display: block; }
+.pe .qr p { font-size: 2.5mm; line-height: 1.4; color: #DCE8FA; max-width: 40mm; }
+.pe .qr p b { color: #fff; font-size: 2.9mm; }
+
+/* na tela: a folha centrada sobre fundo cinza, como numa prévia de impressão */
+@media screen {
+  html, body { width: auto; height: auto; overflow: auto; }
+  body { background: #59647A; padding: 24px 0; }
+  .pag { margin: 0 auto; box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+}
