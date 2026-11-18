@@ -14,14 +14,17 @@
 
 :root {
   color-scheme: light;
-  --leaf: #2A57A0; --leaf-hover: #22477F; --leaf-strong: #1B3C6E; --leaf-soft: #E7EDF8;
-  --bg: #F1F3F8; --card: #FFFFFF; --sunk: #F5F7FB; --line: #D9DFEA; --line-strong: #BEC8D8;
-  --ink: #151D2B; --grey: #586274; --muted: #6B7686;
-  --th-bg: #E5EAF4; --th-ink: #2E394C;
+  /* Paleta da logo do Instituto CRV Minas (img/logo-instituto.webp): marinho #00257D, royal #0051BF, azul #007BDF,
+     ciano #26BAF2 e o âmbar/laranja da figura #FFAF02 / #FB8401. --leaf é o royal (6,6:1 sobre branco). */
+  --leaf: #0051BF; --leaf-hover: #00419C; --leaf-strong: #00257D; --leaf-soft: #E5EFFC;
+  --logo-marinho: #00257D; --logo-royal: #0051BF; --logo-azul: #007BDF; --logo-ciano: #26BAF2; --logo-ambar: #FFAF02; --logo-laranja: #FB8401;
+  --bg: #F1F4FA; --card: #FFFFFF; --sunk: #F5F8FD; --line: #D8E0ED; --line-strong: #BCC9DC;
+  --ink: #131C2E; --grey: #56617A; --muted: #687489;
+  --th-bg: #E4EDFA; --th-ink: #1D2E57;
   --ok: #2E8540; --warn: #A96F0B; --bad: #B8392B; --info: #2F6FB2;
   --ok-bg: rgba(46,133,64,.12); --warn-bg: rgba(201,138,18,.15); --bad-bg: rgba(184,57,43,.11); --info-bg: rgba(47,111,178,.10);
   --side: #0F2035; --side-ink: #DCE6D8; --side-mute: #8DA1B8; --side-hover: rgba(255,255,255,.06);
-  --side-on: #3E72AC; --side-on-light: #6FA0D8;
+  --side-on: #0051BF; --side-on-light: #4FB3F0;
   --f-display: "SIGA Barlow", "Barlow Condensed", "Arial Narrow", "SIGA Inter", sans-serif;
   --f-body: "SIGA Inter", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --r: 10px; --r-sm: 6px; --side-w: 272px; --side-trilho: 60px;
@@ -29,7 +32,7 @@
   --trilha: #E3E8F0; --grade: #E8ECF2;
   --sombra: 0 1px 2px rgba(16,32,58,.05), 0 6px 18px rgba(16,32,58,.06);
   --sombra-forte: 0 12px 32px rgba(15,25,40,.20);
-  --destaque: #FFD765;
+  --destaque: #FFAF02;
   /* nomes antigos usados pelas telas */
   --marca: var(--leaf-strong); --marca-2: var(--leaf); --marca-suave: var(--leaf-soft);
   --fundo: var(--bg); --cartao: var(--card); --cartao-2: var(--sunk); --tinta: var(--ink); --tinta-2: #3D4757; --mudo: var(--muted);
@@ -40,7 +43,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --leaf: #6FA0D8; --leaf-hover: #8CB6E4; --leaf-strong: #23446F; --leaf-soft: #16212F;
+    --leaf: #4FB3F0; --leaf-hover: #7CC7F5; --leaf-strong: #0B3A8C; --leaf-soft: #0F2034;
     --bg: #0A1118; --card: #131C27; --sunk: #172331; --line: #223040; --line-strong: #31445A;
     --ink: #E0E7F0; --grey: #95A4B6; --muted: #8C9AAD; --tinta-2: #C1CAD6;
     --th-bg: #1A2636; --th-ink: #C9D4E2;
@@ -52,7 +55,7 @@
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --leaf: #6FA0D8; --leaf-hover: #8CB6E4; --leaf-strong: #23446F; --leaf-soft: #16212F;
+  --leaf: #4FB3F0; --leaf-hover: #7CC7F5; --leaf-strong: #0B3A8C; --leaf-soft: #0F2034;
   --bg: #0A1118; --card: #131C27; --sunk: #172331; --line: #223040; --line-strong: #31445A;
   --ink: #E0E7F0; --grey: #95A4B6; --muted: #8C9AAD; --tinta-2: #C1CAD6;
   --th-bg: #1A2636; --th-ink: #C9D4E2;
@@ -118,6 +121,14 @@ main { width: 100%; max-width: none; margin: 0; padding: clamp(14px, 1.5vw, 32px
 /* símbolo do portal no quadrinho do cartão de início do menu */
 .sg .sg-inicio .sg-q img { width: 24px; height: 24px; border-radius: 6px; }
 .sg .sg-marca img { border-radius: 7px; }
+/* menu (css/menu-siga.css é cópia do SIGA e fica como está): fundo no marinho da logo e, no lugar do filete verde
+   do SIGA, o degradê da logo (royal -> ciano -> âmbar) */
+/* .app na frente: o menu-siga.css carrega depois deste arquivo */
+.app .sidebar.sg { background: #021C5E; }
+.app .sg { --sg-fundo: #021C5E; --sg-icone: #021C5E; --sg-hover-opaco: color-mix(in srgb, #FFFFFF 7%, #021C5E);
+  --sg-ativo-opaco: color-mix(in srgb, #FFFFFF 12%, #021C5E); }
+.app .sg .sg-marca { border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, #0051BF, #26BAF2 60%, #FFAF02) 1; }
 .menu-btn { display: none; }
 @media (max-width: 900px) { .menu-btn { display: inline-grid; } }
 
@@ -134,16 +145,20 @@ main { width: 100%; max-width: none; margin: 0; padding: clamp(14px, 1.5vw, 32px
 
 /* ---------------- banner executivo (padrão .hero do SIGA) */
 .heroi { position: relative; overflow: hidden; border-radius: var(--r); padding: 22px 26px; color: #E9EFF8; margin-bottom: 18px;
-  background: linear-gradient(115deg, #0F2035 0%, #1B3C6E 58%, #2A57A0 100%);
+  background: linear-gradient(115deg, #02114F 0%, #00257D 45%, #0051BF 82%, #007BDF 100%);
   display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.4fr); gap: 22px; align-items: center; }
 .heroi::after { content: ""; position: absolute; inset: 0 0 0 42%; pointer-events: none;
-  background: repeating-linear-gradient(-62deg, rgba(111,160,216,.14) 0 2px, transparent 2px 13px);
+  background: repeating-linear-gradient(-62deg, rgba(38,186,242,.16) 0 2px, transparent 2px 13px);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 65%); mask-image: linear-gradient(90deg, transparent, #000 65%); }
 .heroi > * { position: relative; z-index: 1; }
+/* a logo numa placa branca: o marinho e o royal dela somem sobre o banner, nos dois temas */
+.heroi-logo { display: block; height: 104px; width: auto; background: #fff; border-radius: 12px; padding: 8px 12px; margin: 0 0 14px;
+  box-shadow: 0 4px 14px rgba(2,17,79,.28); }
+@media (max-width: 640px) { .heroi-logo { height: 84px; } }
 .heroi h1 { color: #fff; font-size: clamp(1.5rem, 1.1rem + 1.1vw, 1.95rem); margin-bottom: 6px; }
 .heroi p { color: #C9D6EA; margin: 0 0 12px; max-width: 56ch; }
 .heroi .exercicio { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.1); padding: 5px 6px 5px 12px; border-radius: 8px; font-size: 13px; }
-.heroi select { background: #fff; color: #14325c; border: 0; border-radius: 6px; padding: 4px 8px; font-weight: 600; }
+.heroi select { background: #fff; color: #00257D; border: 0; border-radius: 6px; padding: 4px 8px; font-weight: 600; }
 .heroi .quando { font-size: 12px; color: #A9BCD8; margin: 10px 0 0; }
 .resumo { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .resumo > div { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: 12px 14px; min-width: 0; }
@@ -152,7 +167,7 @@ main { width: 100%; max-width: none; margin: 0; padding: clamp(14px, 1.5vw, 32px
 .resumo .r-sub { font-size: 12px; color: #C9D6EA; }
 .resumo .exec { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; }
 .resumo .exec .barra { flex: 1; height: 10px; border-radius: 99px; background: rgba(255,255,255,.14); overflow: hidden; }
-.resumo .exec .barra i { display: block; height: 100%; background: linear-gradient(90deg, #6FA0D8, #9fd0ff); border-radius: 99px; }
+.resumo .exec .barra i { display: block; height: 100%; background: linear-gradient(90deg, #26BAF2, #FFAF02); border-radius: 99px; }
 .resumo .exec b { font-family: var(--f-display); font-size: 1.35rem; color: #fff; }
 .heroi .delta, .heroi .delta.bom, .heroi .delta.ruim, .heroi .delta.neutro { background: rgba(255,255,255,.12); }
 .heroi .delta.bom { color: #9fe3b0; } .heroi .delta.ruim { color: #ffb4a8; } .heroi .delta.neutro { color: #d6e2f3; }
@@ -327,7 +342,7 @@ td .sub { display: block; color: var(--muted); font-size: 12px; }
 .carrossel { position: relative; aspect-ratio: 16 / 9; background: var(--sunk); overflow: hidden; }
 .carrossel .trilho { display: flex; height: 100%; transition: transform .45s cubic-bezier(.22,1,.36,1); }
 .carrossel img { width: 100%; height: 100%; flex: none; object-fit: cover; display: block; cursor: zoom-in; }
-.carrossel .seta { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; border: 0; background: rgba(255,255,255,.92); color: #14325c; cursor: pointer;
+.carrossel .seta { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; border: 0; background: rgba(255,255,255,.92); color: #00257D; cursor: pointer;
   display: grid; place-items: center; box-shadow: 0 2px 8px rgba(0,0,0,.25); opacity: 0; transition: opacity .2s; z-index: 2; font-size: 18px; line-height: 1; }
 .carrossel .seta.ant { left: 10px; } .carrossel .seta.prox { right: 10px; }
 .carrossel:hover .seta, .carrossel:focus-within .seta { opacity: 1; }

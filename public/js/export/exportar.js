@@ -17,7 +17,7 @@ export function iniciarPDF({ titulo, subtitulo = '', demonstracao = false, paisa
   const doc = criarPDF({ titulo, paisagem });
   doc.cabecalho(d => {
     const M = d.margem;
-    d.retangulo(0, 0, d.largura, 54, { preencher: '#14325c' });
+    d.retangulo(0, 0, d.largura, 54, { preencher: '#00257D' });  // marinho da logo
     d.texto(M, 14, 'INSTITUTO CRV', { tam: 12, negrito: true, cor: '#ffffff' });
     d.texto(M, 31, 'Portal de Transparência', { tam: 9, cor: '#c9d8ef' });
     d.texto(M, 20, titulo, { tam: 9, cor: '#ffffff', alinhar: 'dir', larg: d.larguraUtil, negrito: true });

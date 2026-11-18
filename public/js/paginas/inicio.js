@@ -59,6 +59,7 @@ export async function render(main, rota) {
   main.innerHTML = `
     <section class="heroi">
       <div>
+        <img class="heroi-logo" src="img/logo-instituto.webp" alt="Instituto CRV Minas — Transformando vidas" width="720" height="636">
         <h1>Transparência na gestão dos recursos do Instituto CRV</h1>
         <p>Quanto recebemos, de onde vieram os recursos, onde foram aplicados, quem foi beneficiado e quais resultados entregamos.</p>
         <label class="exercicio">Exibindo ${seletorAno(b, anoQ === 'todos' ? '' : ano)}</label>

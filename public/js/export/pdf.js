@@ -122,9 +122,9 @@ export function criarPDF({ titulo = 'Documento', autor = 'Instituto CRV', paisag
 
     titulo(s, tam = 15) {
       doc.espaco(tam * 2.2);
-      doc.texto(M, y, s, { tam, negrito: true, cor: '#14325c' });
+      doc.texto(M, y, s, { tam, negrito: true, cor: '#00257D' });
       y += tam * 1.5;
-      doc.linha(M, y, L - M, y, { cor: '#2a57a0', espessura: 1 });
+      doc.linha(M, y, L - M, y, { cor: '#0051BF', espessura: 1 });
       y += 8;
       return doc;
     },
