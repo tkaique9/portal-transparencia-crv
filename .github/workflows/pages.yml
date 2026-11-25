@@ -1,4 +1,11 @@
 # Publica a pasta public/ no GitHub Pages a cada push no main, depois dos testes.
+#
+# Dois trabalhos, como o modelo oficial do GitHub: "montar" envia o pacote e
+# "publicar" só começa quando ele termina. Com os dois passos no mesmo
+# trabalho, o deploy às vezes perguntava pelo pacote antes de a listagem do
+# GitHub mostrá-lo ("No artifacts named github-pages were found"), embora o
+# pacote existisse — falha intermitente relatada por vários projetos em
+# nov/2026 (actions/deploy-pages#451).
 name: Publicar no GitHub Pages
 
 on:
@@ -13,14 +20,11 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  publicar:
+  montar:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -31,5 +35,13 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: public
+
+  publicar:
+    needs: montar
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
       - id: deploy
         uses: actions/deploy-pages@v5
