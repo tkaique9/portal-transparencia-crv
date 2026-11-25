@@ -3,165 +3,248 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Mesma política do servidor.js, para hospedagem estática (GitHub Pages) que não manda cabeçalho -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; frame-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; object-src 'none'; base-uri 'none'; form-action 'self'">
   <meta name="referrer" content="no-referrer">
-  <title>Portal de Transparência — Instituto CRV</title>
-  <meta name="description" content="Quanto o Instituto CRV recebeu, de onde vieram os recursos, onde foram aplicados, quem foi beneficiado e quais resultados foram entregues.">
+  <title>Instituto CRV Minas — Transformando vidas</title>
+  <meta name="description" content="Instituto CRV Minas: projetos de educação, cultura, esporte e meio ambiente para crianças, adolescentes e adultos. Transparência em cada real aplicado.">
   <link rel="icon" href="img/icone.png" type="image/png">
-  <!-- ?v= muda a cada versão: o GitHub Pages guarda CSS em cache por 10 min e o navegador juntaria HTML novo com CSS velho -->
-  <link rel="stylesheet" href="css/portal.css?v=14">
-  <link rel="stylesheet" href="css/menu-siga.css?v=14">
-  <script type="module" src="js/app.js"></script>
+  <script src="js/redirecionar.js"></script>
+  <link rel="stylesheet" href="css/site.css?v=1">
+  <script type="module" src="js/site.js?v=1"></script>
 </head>
 <body>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<div class="progresso" id="progresso" aria-hidden="true"></div>
 
-<!-- Menu lateral no padrão SIGA-MG: mesma estrutura do templates/_menu_siga.html
-     (app-disponibilidade-frota), estilo em css/menu-siga.css (cópia do
-     static/siga/menu.css) e comportamento em js/ui/menu-siga.js (porta do
-     static/siga/menu.js). O nome da tela é o último texto do link; o subtítulo
-     vem do data-desc. -->
-<div class="app" id="app">
-  <aside class="sidebar sg siga-menu" id="sg-menu" aria-label="Navegação do portal">
-    <div class="sg-marca">
-      <img src="img/icone.png" alt="" width="30" height="30">
-      <a class="sg-marca-txt" href="#/"><div class="bt">Instituto CRV</div><div class="bs">Portal de Transparência</div></a>
-      <button type="button" class="sg-fechar" aria-label="Fechar o menu" title="Fechar o menu" data-alternar-menu>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    </div>
-    <div class="sg-busca" role="search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-      <input type="search" id="busca-menu" placeholder="Buscar no menu…" aria-label="Buscar tela no menu" autocomplete="off"
-             aria-controls="menu-nav" title="Digite parte do nome (ex.: despesas, contratos). Enter abre; setas escolhem.">
-      <kbd aria-hidden="true">Ctrl K</kbd>
-    </div>
-    <nav class="menu" id="menu-nav" aria-label="Menu do portal">
-      <div class="busca-vazio" id="busca-vazio" hidden>Nenhuma tela com esse nome.</div>
+<!-- Site institucional (porta de entrada). O sistema — portal de transparência
+     e área restrita — está em portal.html; o botão "Entrar" do topo leva ao login dele
+     ele. Textos institucionais: js/dados/institucional.js (Quadro Institucional).
+     Números, projetos, fotos e parceiros: a mesma base pública do portal. -->
 
-      <div class="navgroup sg-inicio">
-        <a href="#/" data-desc="Visão geral do portal" data-grupo="Visão geral" title="Painel com os números principais"><span class="sg-q" aria-hidden="true"><img src="img/icone.png" alt=""></span><span class="sg-ir" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>Início / Painel</a>
-      </div>
-
-      <div class="navgroup" data-cor="lima" data-secao="instituto">
-        <div class="sg-sec">
-          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.4-7-10.2A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7 2.8C19 16.6 12 21 12 21z"/></svg>Instituto</div>
-          <span class="sg-sec-n" aria-hidden="true">1</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-        </div>
-        <div class="sg-itens">
-          <a href="#/institucional" data-desc="Propósito, missão, visão e valores" data-grupo="Instituto" title="Quadro institucional do Instituto CRV Minas, com modo de apresentação"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3"/><path d="M5.5 21c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/><path d="M4 11l-1.5 1.5M20 11l1.5 1.5"/></svg></span>Quem somos</a>
-        </div>
-      </div>
-
-      <div class="navgroup" data-cor="verde-agua" data-secao="acompanhamento">
-        <div class="sg-sec">
-          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l4.2-4.2"/></svg>Acompanhamento</div>
-          <span class="sg-sec-n" aria-hidden="true">1</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-        </div>
-        <div class="sg-itens">
-          <a href="#/impacto" data-desc="Pessoas, metas e resultados" data-grupo="Acompanhamento" title="Indicadores de impacto social"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.2c3 .3 5.5 2.6 5.5 5.8"/></svg></span>Impacto social</a>
-        </div>
-      </div>
-
-      <div class="navgroup" data-cor="ciano" data-secao="recursos">
-        <div class="sg-sec">
-          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M14.8 9.2c-.5-.9-1.6-1.4-2.8-1.4-1.7 0-2.9.9-2.9 2.1 0 2.9 5.9 1.5 5.9 4.3 0 1.2-1.3 2.1-3 2.1-1.3 0-2.5-.6-3-1.6M12 6v1.8M12 16.3V18"/></svg>Recursos</div>
-          <span class="sg-sec-n" aria-hidden="true">3</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-        </div>
-        <div class="sg-itens">
-          <a href="#/receitas" data-desc="Origem dos recursos" data-grupo="Recursos" title="Todo recurso recebido pelo Instituto"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span>Receitas</a>
-          <a href="#/despesas" data-desc="Onde o dinheiro foi aplicado" data-grupo="Recursos" title="Todo pagamento feito, com fornecedor e comprovante"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>Despesas</a>
-          <a href="#/prestacao" data-desc="Relatório por exercício, PDF e Excel" data-grupo="Recursos" title="Receitas, despesas, saldo e orçamento por exercício"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>Prestação de contas</a>
-        </div>
-      </div>
-
-      <div class="navgroup" data-cor="amarelo" data-secao="atuacao">
-        <div class="sg-sec">
-          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.4-7-10.2A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7 2.8C19 16.6 12 21 12 21z"/></svg>Atuação</div>
-          <span class="sg-sec-n" aria-hidden="true">2</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-        </div>
-        <div class="sg-itens">
-          <a href="#/projetos" data-desc="Ações, metas e fotos" data-grupo="Atuação" title="Projetos e ações sociais"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Projetos</a>
-          <a href="#/contratos" data-desc="Convênios, termos e aditivos" data-grupo="Atuação" title="Contratos, convênios e parcerias"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11 11 8l3 1 3-3 4 4-6 6-2-1-3 3-6-6 3-3"/><path d="m3 10 4 4"/></svg></span>Contratos e parcerias</a>
-        </div>
-      </div>
-
-      <div class="navgroup" data-cor="laranja" data-secao="publicacoes">
-        <div class="sg-sec">
-          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>Publicações</div>
-          <span class="sg-sec-n" aria-hidden="true">1</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-        </div>
-        <div class="sg-itens">
-          <div class="sg-mod">
-            <button type="button" class="sg-mod-btn" aria-expanded="false" title="Documentos, metodologia e privacidade"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 7h6M8 11h6"/></svg></span><span class="sg-mod-t">Transparência</span><span class="sg-mod-d">Documentos e regras de uso</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
-            <div class="sg-filhos siga-guia">
-              <div class="sg-fly-tit" aria-hidden="true">Transparência</div>
-              <a href="#/documentos" class="siga-pilula" data-grupo="Publicações" title="Estatuto, balanços, auditorias, contratos"><span>Documentos</span></a>
-              <a href="#/sobre-dados" class="siga-pilula" data-grupo="Publicações" title="Como cada número é calculado"><span>Sobre os dados</span></a>
-              <a href="#/privacidade" class="siga-pilula" data-grupo="Publicações" title="O que é e o que não é publicado"><span>Privacidade e LGPD</span></a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="navgroup" data-cor="azul" data-secao="gestao">
-        <div class="sg-sec">
-          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg>Gestão</div>
-          <span class="sg-sec-n" aria-hidden="true">1</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-        </div>
-        <div class="sg-itens">
-          <a href="#/admin" data-desc="Lançamentos e aprovação" data-grupo="Gestão" title="Área restrita da equipe"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg></span>Área restrita</a>
-        </div>
-      </div>
-    </nav>
-    <div class="sg-rodape">
-      <div id="side-status"></div>
-      <div id="ultima-atualizacao"></div>
-    </div>
-    <div class="sg-pe">
-      <button type="button" class="sg-recolher" data-alternar-menu title="Recolher o menu (fica só a coluna de ícones)" aria-label="Recolher ou expandir o menu">
-        <svg class="sg-ic-recolher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg>
-        <svg class="sg-ic-expandir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 10l2 2-2 2"/></svg>
-        <span>Recolher menu</span></button>
-    </div>
-  </aside>
-  <div class="scrim" id="scrim"></div>
-
-  <div class="shell">
-    <div id="faixa-exemplo" class="faixa-exemplo" hidden>
-      <strong>Dados de exemplo.</strong> Todas as informações deste portal são fictícias, criadas só para demonstração. Não correspondem a dados reais do Instituto CRV.
-    </div>
-    <header class="topbar"><div class="tb">
-      <button type="button" class="ghost-btn menu-btn" data-alternar-menu aria-label="Recolher ou mostrar o menu" title="Recolher / mostrar o menu" aria-controls="sg-menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-      <div class="crumb"><span class="cg" id="crumb-grupo">Visão geral</span><span class="ct" id="crumb-tela">Painel</span></div>
-      <div class="spacer"></div>
-      <form class="busca-topo" id="form-busca" role="search">
-        <label class="sr" for="busca-geral">Pesquisar no portal</label>
-        <input id="busca-geral" type="search" placeholder="Pesquisar projetos, despesas, documentos…" autocomplete="off">
-        <button type="submit" aria-label="Pesquisar">
-          <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
-      </form>
-      <span class="chip chip-exemplo" id="chip-exemplo" hidden title="Os dados exibidos são fictícios"><span class="dot warn"></span>Dados <b>de exemplo</b></span>
-      <button class="ghost-btn" id="alternar-tema" type="button" aria-label="Alternar tema claro/escuro" title="Tema claro/escuro">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" fill="currentColor"/></svg>
-      </button>
-    </div></header>
-
-    <main id="conteudo" tabindex="-1">
-      <div class="carregando" id="carregando"><div class="giro" aria-hidden="true"></div><p id="carregando-msg">Carregando o portal…</p></div>
-    </main>
-
-    <footer class="rodape">
-      <span><b>Instituto CRV</b> · Portal de Transparência</span>
-      <nav aria-label="Links do rodapé"><a href="#/documentos">Documentos</a><a href="#/prestacao">Prestação de contas</a><a href="#/privacidade">Privacidade e LGPD</a><a href="#/sobre-dados">Sobre os dados</a></nav>
-    </footer>
-  </div>
+<div class="faixa-exemplo" id="faixa-exemplo" hidden>
+  <b>Dados de exemplo.</b> Números, projetos, fotos e parceiros desta página vêm do portal, que hoje está com dados fictícios de demonstração.
 </div>
 
-<div id="modal-raiz"></div>
-<div id="avisos" class="avisos" aria-live="polite"></div>
-<div id="dica" class="dica" role="tooltip" hidden></div>
+<header class="topo" id="topo">
+  <div class="topo-in">
+    <a class="marca" href="#inicio" aria-label="Instituto CRV Minas — início"><img src="img/logo-instituto.webp" alt="Instituto CRV Minas — Transformando vidas" width="720" height="636"></a>
+    <nav class="nav" id="nav" aria-label="Seções do site">
+      <a href="#quem-somos">Quem somos</a>
+      <a href="#atuacao">Atuação</a>
+      <a href="#projetos">Projetos</a>
+      <a href="#transparencia">Transparência</a>
+      <a href="#parceiros">Parceiros</a>
+      <a href="#valores">Valores</a>
+    </nav>
+    <!-- login de verdade: abre a tela de entrada da área restrita do sistema -->
+    <a class="btn btn-entrar" href="portal.html#/admin" aria-label="Entrar: login da área restrita">
+      <svg class="cadeado" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8.5 10.5V7.8a3.5 3.5 0 0 1 7 0v2.7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <span>Entrar</span>
+    </a>
+    <button class="sanduiche" id="sanduiche" type="button" aria-label="Abrir o menu" aria-expanded="false" aria-controls="nav"><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="conteudo">
+
+  <!-- ===== abertura ===== -->
+  <section class="abertura" id="inicio" aria-label="Abertura">
+    <div class="abertura-fotos" id="abertura-fotos" aria-hidden="true"></div>
+    <div class="abertura-veu" aria-hidden="true"></div>
+    <!-- ilustrações no traço da logo (folhas e figuras de braços abertos), em camadas que andam em velocidades diferentes ao rolar -->
+    <div class="deco-camada" aria-hidden="true">
+      <span class="deco folha d1" data-vel="-0.18"></span>
+      <span class="deco pessoa d2" data-vel="-0.32"></span>
+      <span class="deco folha d3" data-vel="-0.1"></span>
+      <span class="deco bola d4" data-vel="-0.4"></span>
+    </div>
+    <div class="abertura-in">
+      <p class="sobretitulo claro" id="abertura-sobre">Instituto CRV Minas</p>
+      <h1 class="titulo-caixas"><span>Transformando</span><span>vidas</span><span class="rotativo" aria-live="polite"><i id="rotativo">pela educação</i></span></h1>
+      <p class="abertura-texto" id="abertura-texto"></p>
+      <div class="abertura-acoes">
+        <a class="btn btn-ambar" href="portal.html">Portal de transparência</a>
+        <a class="btn btn-vazado-claro" href="#quem-somos">Conheça o Instituto</a>
+      </div>
+    </div>
+    <a class="abertura-cartao" id="abertura-cartao" href="portal.html#/impacto" hidden>
+      <span class="ac-rot">Pessoas atendidas</span>
+      <b>0</b>
+      <span class="ac-sub" id="ac-sub"></span>
+      <span class="ac-ir">Ver impacto social →</span>
+    </a>
+    <div class="abertura-legenda" id="abertura-legenda" aria-live="polite"></div>
+  </section>
+
+  <!-- ===== quem somos ===== -->
+  <section class="secao" id="quem-somos">
+    <div class="deco-camada" aria-hidden="true">
+      <span class="deco pessoa q1" data-vel="0.12"></span>
+      <span class="deco folha q2" data-vel="-0.08"></span>
+    </div>
+    <div class="in">
+      <div class="duas">
+        <div class="revela">
+          <p class="sobretitulo">Quem somos</p>
+          <h2 class="titulo-grande">Por que<br>existimos</h2>
+        </div>
+        <p class="frase-proposito revela" id="frase-proposito"></p>
+      </div>
+      <div class="pilares" id="pilares"></div>
+      <div class="centro revela"><a class="btn btn-marinho" href="portal.html#/institucional">Ver o quadro institucional completo</a></div>
+    </div>
+  </section>
+
+  <!-- faixa de palavras gigantes: anda com a rolagem (mais rápido quanto mais rápido se rola) -->
+  <div class="cinetica" aria-hidden="true"><div class="cinetica-trilho" data-sentido="1"></div></div>
+
+  <!-- ===== atuação ===== -->
+  <section class="secao creme" id="atuacao">
+    <div class="in">
+      <div class="cab-secao revela">
+        <p class="sobretitulo">Atuação</p>
+        <h2 class="titulo-grande">Onde atuamos</h2>
+        <p class="lide">Nosso público: <b id="publico"></b>. Cada área abaixo mostra o que já está publicado no portal de transparência.</p>
+      </div>
+      <div class="areas" id="areas"></div>
+    </div>
+  </section>
+
+  <!-- ===== transparência (padrão "seja patrocinador" da referência) ===== -->
+  <section class="secao" id="transparencia">
+    <div class="in duas foto-texto">
+      <div class="foto-arco revela">
+        <span class="arco" aria-hidden="true"></span>
+        <span class="bolha" aria-hidden="true"></span>
+        <img id="foto-transparencia" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+      </div>
+      <div class="revela">
+        <p class="sobretitulo">Transparência</p>
+        <h2 class="titulo-grande">Cada real,<br>à vista de todos</h2>
+        <p class="lide">Quanto recebemos, de onde veio, onde foi aplicado e quem foi beneficiado: tudo publicado no portal de transparência, aberto a qualquer pessoa, sem cadastro.</p>
+        <ul class="checks">
+          <li>Receitas e despesas lançamento a lançamento, com comprovante</li>
+          <li>Prestação de contas por exercício, em PDF e Excel</li>
+          <li>Contratos, convênios, relatórios e auditorias</li>
+          <li>Metas e resultados de cada projeto</li>
+        </ul>
+        <div class="acoes">
+          <a class="btn btn-marinho" href="portal.html">Entrar no portal</a>
+          <a class="btn btn-vazado" href="portal.html#/prestacao">Prestação de contas</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== números (padrão da faixa "doe agora" da referência) ===== -->
+  <section class="faixa-marinho" id="numeros" aria-labelledby="numeros-titulo">
+    <div class="in">
+      <h2 id="numeros-titulo">O que já transformamos juntos.</h2>
+      <p class="faixa-sub" id="numeros-sub">Números do portal de transparência, atualizados a cada publicação.</p>
+      <div class="circulos" id="circulos"></div>
+      <div class="acoes">
+        <a class="btn btn-ambar" href="portal.html">Abrir o portal de transparência</a>
+        <a class="btn btn-ambar-vazado" href="portal.html#/impacto">Ver o impacto social</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== projetos ===== -->
+  <section class="secao" id="projetos">
+    <div class="in">
+      <div class="cab-secao linha revela">
+        <div>
+          <p class="sobretitulo">Projetos</p>
+          <h2 class="titulo-grande">Quem é transformado</h2>
+        </div>
+        <a class="btn btn-vazado" href="portal.html#/projetos">Todos os projetos</a>
+      </div>
+      <div class="projetos" id="lista-projetos"></div>
+    </div>
+  </section>
+
+  <!-- ===== momentos: duas fileiras de imagens em movimento, em sentidos opostos ===== -->
+  <section class="momentos" id="momentos" aria-labelledby="momentos-titulo">
+    <div class="in cab-secao revela">
+      <p class="sobretitulo">Momentos</p>
+      <h2 class="titulo-grande" id="momentos-titulo">Momentos que transformam</h2>
+      <p class="lide" id="momentos-sub">As imagens publicadas pelos projetos. Passe o mouse para pausar; clique para conhecer o projeto.</p>
+    </div>
+    <div class="fileira" id="fileira-1"></div>
+    <div class="fileira volta" id="fileira-2"></div>
+  </section>
+
+  <div class="cinetica escura" aria-hidden="true"><div class="cinetica-trilho" data-sentido="-1"></div></div>
+
+  <!-- ===== parceiros ===== -->
+  <section class="secao creme" id="parceiros">
+    <div class="in">
+      <div class="cab-secao centro revela">
+        <p class="sobretitulo">Parceiros e apoiadores</p>
+        <h2 class="titulo-grande">Obrigado a quem caminha com a gente</h2>
+        <p class="lide">Empresas, fundações e poder público que tornam os projetos possíveis — os mesmos parceiros publicados no portal, com cada repasse à vista.</p>
+      </div>
+      <div class="parceiros" id="lista-parceiros"></div>
+      <div class="convite revela">
+        <div>
+          <p class="sobretitulo">Seja parceiro</p>
+          <h3>Faça parte dessa transformação</h3>
+          <p>Toda contribuição é publicada no portal, com origem, valor e o projeto que ela sustenta.</p>
+        </div>
+        <a class="btn btn-marinho" href="portal.html#/receitas">Ver como os recursos são aplicados</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== valores ===== -->
+  <section class="secao" id="valores">
+    <div class="deco-camada" aria-hidden="true">
+      <span class="deco folha v1" data-vel="0.1"></span>
+      <span class="deco bola v2" data-vel="-0.15"></span>
+    </div>
+    <div class="in">
+      <div class="cab-secao revela">
+        <p class="sobretitulo">Valores</p>
+        <h2 class="titulo-grande">No que acreditamos</h2>
+      </div>
+      <ol class="valores" id="lista-valores"></ol>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <div class="in">
+    <img class="rodape-logo" src="img/logo-instituto.webp" alt="Instituto CRV Minas — Transformando vidas" width="720" height="636">
+    <div class="rodape-grade">
+      <nav class="rodape-nav" aria-label="Seções">
+        <a href="#quem-somos">Quem somos</a>
+        <a href="#atuacao">Atuação</a>
+        <a href="#projetos">Projetos</a>
+        <a href="#transparencia">Transparência</a>
+        <a href="#parceiros">Parceiros</a>
+        <a href="#valores">Valores</a>
+      </nav>
+      <p class="rodape-frase">Transformar vidas começa com transparência.</p>
+      <div class="rodape-links">
+        <a href="portal.html">Portal de transparência</a>
+        <a href="portal.html#/prestacao">Prestação de contas</a>
+        <a href="portal.html#/documentos">Documentos e relatórios</a>
+        <a href="portal.html#/admin">Área restrita da equipe</a>
+      </div>
+    </div>
+    <div class="rodape-base">
+      <div>
+        <p>© <span id="ano"></span> Instituto CRV Minas</p>
+        <p><a href="portal.html#/privacidade">Privacidade e LGPD</a> · <a href="portal.html#/sobre-dados">Sobre os dados</a></p>
+      </div>
+      <div class="acoes">
+        <a class="btn btn-ambar" href="portal.html#/admin">Entrar (área restrita)</a>
+        <a class="btn btn-ambar-vazado escuro" href="portal.html">Portal de transparência</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<a class="subir" href="#inicio" aria-label="Voltar ao topo" id="subir"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
 </body>
 </html>

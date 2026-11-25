@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Mesma política do servidor.js, para hospedagem estática (GitHub Pages) que não manda cabeçalho -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; frame-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <meta name="referrer" content="no-referrer">
+  <title>Portal de Transparência — Instituto CRV</title>
+  <meta name="description" content="Quanto o Instituto CRV recebeu, de onde vieram os recursos, onde foram aplicados, quem foi beneficiado e quais resultados foram entregues.">
+  <link rel="icon" href="img/icone.png" type="image/png">
+  <!-- ?v= muda a cada versão: o GitHub Pages guarda CSS em cache por 10 min e o navegador juntaria HTML novo com CSS velho -->
+  <link rel="stylesheet" href="css/portal.css?v=14">
+  <link rel="stylesheet" href="css/menu-siga.css?v=14">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<!-- Menu lateral no padrão SIGA-MG: mesma estrutura do templates/_menu_siga.html
+     (app-disponibilidade-frota), estilo em css/menu-siga.css (cópia do
+     static/siga/menu.css) e comportamento em js/ui/menu-siga.js (porta do
+     static/siga/menu.js). O nome da tela é o último texto do link; o subtítulo
+     vem do data-desc. -->
+<div class="app" id="app">
+  <aside class="sidebar sg siga-menu" id="sg-menu" aria-label="Navegação do portal">
+    <div class="sg-marca">
+      <img src="img/icone.png" alt="" width="30" height="30">
+      <a class="sg-marca-txt" href="#/"><div class="bt">Instituto CRV</div><div class="bs">Portal de Transparência</div></a>
+      <button type="button" class="sg-fechar" aria-label="Fechar o menu" title="Fechar o menu" data-alternar-menu>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="sg-busca" role="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input type="search" id="busca-menu" placeholder="Buscar no menu…" aria-label="Buscar tela no menu" autocomplete="off"
+             aria-controls="menu-nav" title="Digite parte do nome (ex.: despesas, contratos). Enter abre; setas escolhem.">
+      <kbd aria-hidden="true">Ctrl K</kbd>
+    </div>
+    <nav class="menu" id="menu-nav" aria-label="Menu do portal">
+      <div class="busca-vazio" id="busca-vazio" hidden>Nenhuma tela com esse nome.</div>
+
+      <div class="navgroup sg-inicio">
+        <a href="#/" data-desc="Visão geral do portal" data-grupo="Visão geral" title="Painel com os números principais"><span class="sg-q" aria-hidden="true"><img src="img/icone.png" alt=""></span><span class="sg-ir" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>Início / Painel</a>
+      </div>
+
+      <div class="navgroup" data-cor="lima" data-secao="instituto">
+        <div class="sg-sec">
+          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.4-7-10.2A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7 2.8C19 16.6 12 21 12 21z"/></svg>Instituto</div>
+          <span class="sg-sec-n" aria-hidden="true">1</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </div>
+        <div class="sg-itens">
+          <a href="#/institucional" data-desc="Propósito, missão, visão e valores" data-grupo="Instituto" title="Quadro institucional do Instituto CRV Minas, com modo de apresentação"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3"/><path d="M5.5 21c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/><path d="M4 11l-1.5 1.5M20 11l1.5 1.5"/></svg></span>Quem somos</a>
+        </div>
+      </div>
+
+      <div class="navgroup" data-cor="verde-agua" data-secao="acompanhamento">
+        <div class="sg-sec">
+          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l4.2-4.2"/></svg>Acompanhamento</div>
+          <span class="sg-sec-n" aria-hidden="true">1</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </div>
+        <div class="sg-itens">
+          <a href="#/impacto" data-desc="Pessoas, metas e resultados" data-grupo="Acompanhamento" title="Indicadores de impacto social"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.2c3 .3 5.5 2.6 5.5 5.8"/></svg></span>Impacto social</a>
+        </div>
+      </div>
+
+      <div class="navgroup" data-cor="ciano" data-secao="recursos">
+        <div class="sg-sec">
+          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M14.8 9.2c-.5-.9-1.6-1.4-2.8-1.4-1.7 0-2.9.9-2.9 2.1 0 2.9 5.9 1.5 5.9 4.3 0 1.2-1.3 2.1-3 2.1-1.3 0-2.5-.6-3-1.6M12 6v1.8M12 16.3V18"/></svg>Recursos</div>
+          <span class="sg-sec-n" aria-hidden="true">3</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </div>
+        <div class="sg-itens">
+          <a href="#/receitas" data-desc="Origem dos recursos" data-grupo="Recursos" title="Todo recurso recebido pelo Instituto"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span>Receitas</a>
+          <a href="#/despesas" data-desc="Onde o dinheiro foi aplicado" data-grupo="Recursos" title="Todo pagamento feito, com fornecedor e comprovante"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>Despesas</a>
+          <a href="#/prestacao" data-desc="Relatório por exercício, PDF e Excel" data-grupo="Recursos" title="Receitas, despesas, saldo e orçamento por exercício"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>Prestação de contas</a>
+        </div>
+      </div>
+
+      <div class="navgroup" data-cor="amarelo" data-secao="atuacao">
+        <div class="sg-sec">
+          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.4-7-10.2A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7 2.8C19 16.6 12 21 12 21z"/></svg>Atuação</div>
+          <span class="sg-sec-n" aria-hidden="true">2</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </div>
+        <div class="sg-itens">
+          <a href="#/projetos" data-desc="Ações, metas e fotos" data-grupo="Atuação" title="Projetos e ações sociais"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span>Projetos</a>
+          <a href="#/contratos" data-desc="Convênios, termos e aditivos" data-grupo="Atuação" title="Contratos, convênios e parcerias"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11 11 8l3 1 3-3 4 4-6 6-2-1-3 3-6-6 3-3"/><path d="m3 10 4 4"/></svg></span>Contratos e parcerias</a>
+        </div>
+      </div>
+
+      <div class="navgroup" data-cor="laranja" data-secao="publicacoes">
+        <div class="sg-sec">
+          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>Publicações</div>
+          <span class="sg-sec-n" aria-hidden="true">1</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </div>
+        <div class="sg-itens">
+          <div class="sg-mod">
+            <button type="button" class="sg-mod-btn" aria-expanded="false" title="Documentos, metodologia e privacidade"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 7h6M8 11h6"/></svg></span><span class="sg-mod-t">Transparência</span><span class="sg-mod-d">Documentos e regras de uso</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+            <div class="sg-filhos siga-guia">
+              <div class="sg-fly-tit" aria-hidden="true">Transparência</div>
+              <a href="#/documentos" class="siga-pilula" data-grupo="Publicações" title="Estatuto, balanços, auditorias, contratos"><span>Documentos</span></a>
+              <a href="#/sobre-dados" class="siga-pilula" data-grupo="Publicações" title="Como cada número é calculado"><span>Sobre os dados</span></a>
+              <a href="#/privacidade" class="siga-pilula" data-grupo="Publicações" title="O que é e o que não é publicado"><span>Privacidade e LGPD</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="navgroup" data-cor="azul" data-secao="gestao">
+        <div class="sg-sec">
+          <div class="gl" role="button" tabindex="0" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg>Gestão</div>
+          <span class="sg-sec-n" aria-hidden="true">1</span><svg class="sg-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+        </div>
+        <div class="sg-itens">
+          <a href="#/admin" data-desc="Lançamentos e aprovação" data-grupo="Gestão" title="Área restrita da equipe"><span class="sg-q" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg></span>Área restrita</a>
+        </div>
+      </div>
+    </nav>
+    <div class="sg-rodape">
+      <div id="side-status"></div>
+      <div id="ultima-atualizacao"></div>
+    </div>
+    <div class="sg-pe">
+      <button type="button" class="sg-recolher" data-alternar-menu title="Recolher o menu (fica só a coluna de ícones)" aria-label="Recolher ou expandir o menu">
+        <svg class="sg-ic-recolher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 10l-2 2 2 2"/></svg>
+        <svg class="sg-ic-expandir" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M13 10l2 2-2 2"/></svg>
+        <span>Recolher menu</span></button>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="shell">
+    <div id="faixa-exemplo" class="faixa-exemplo" hidden>
+      <strong>Dados de exemplo.</strong> Todas as informações deste portal são fictícias, criadas só para demonstração. Não correspondem a dados reais do Instituto CRV.
+    </div>
+    <header class="topbar"><div class="tb">
+      <button type="button" class="ghost-btn menu-btn" data-alternar-menu aria-label="Recolher ou mostrar o menu" title="Recolher / mostrar o menu" aria-controls="sg-menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <div class="crumb"><span class="cg" id="crumb-grupo">Visão geral</span><span class="ct" id="crumb-tela">Painel</span></div>
+      <div class="spacer"></div>
+      <form class="busca-topo" id="form-busca" role="search">
+        <label class="sr" for="busca-geral">Pesquisar no portal</label>
+        <input id="busca-geral" type="search" placeholder="Pesquisar projetos, despesas, documentos…" autocomplete="off">
+        <button type="submit" aria-label="Pesquisar">
+          <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </form>
+      <span class="chip chip-exemplo" id="chip-exemplo" hidden title="Os dados exibidos são fictícios"><span class="dot warn"></span>Dados <b>de exemplo</b></span>
+      <button class="ghost-btn" id="alternar-tema" type="button" aria-label="Alternar tema claro/escuro" title="Tema claro/escuro">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" fill="currentColor"/></svg>
+      </button>
+    </div></header>
+
+    <main id="conteudo" tabindex="-1">
+      <div class="carregando" id="carregando"><div class="giro" aria-hidden="true"></div><p id="carregando-msg">Carregando o portal…</p></div>
+    </main>
+
+    <footer class="rodape">
+      <span><b>Instituto CRV</b> · Portal de Transparência</span>
+      <nav aria-label="Links do rodapé"><a href="./">Site do Instituto</a><a href="#/documentos">Documentos</a><a href="#/prestacao">Prestação de contas</a><a href="#/privacidade">Privacidade e LGPD</a><a href="#/sobre-dados">Sobre os dados</a></nav>
+    </footer>
+  </div>
+</div>
+
+<div id="modal-raiz"></div>
+<div id="avisos" class="avisos" aria-live="polite"></div>
+<div id="dica" class="dica" role="tooltip" hidden></div>
+</body>
+</html>

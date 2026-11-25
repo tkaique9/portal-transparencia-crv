@@ -36,6 +36,16 @@ administrador. Depois disso, só o administrador cria os demais usuários.
 npm test
 ```
 
+## Site institucional e sistema
+
+- **`index.html` — site do Instituto CRV Minas** (porta de entrada): apresentação com o texto do
+  Quadro Institucional (`js/dados/institucional.js`) e números, projetos, imagens e parceiros lidos ao
+  vivo da mesma base pública do portal. O botão **Entrar**, no topo, leva ao login da área restrita.
+- **`portal.html` — o sistema**: portal de transparência e área restrita. Endereços antigos com rota
+  (`…/#/projetos`, o QR Code do pôster `…/#/institucional`) são levados para cá por `js/redirecionar.js`.
+- Imagens: enquanto a base for de exemplo, são ilustrações (marcadas como tal). Fotos reais entram pela
+  área restrita, em Documentos → categoria Fotografia, vinculadas ao projeto, e aparecem no site sozinhas.
+
 ## O que tem
 
 | Página | O que responde |
