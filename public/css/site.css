@@ -319,8 +319,8 @@ p { margin: 0 0 1em; }
 .momento { position: relative; flex: none; width: clamp(240px, 24vw, 380px); aspect-ratio: 4 / 3; border-radius: 18px; overflow: hidden; text-decoration: none; color: #fff; background: var(--marinho); }
 .momento img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.2,.9,.2,1); }
 .momento:hover img { transform: scale(1.08); }
-.momento span { position: absolute; left: 0; right: 0; bottom: 0; padding: 30px 16px 14px; font-size: 14px; font-weight: 600; background: linear-gradient(0deg, rgba(2,20,68,.9), transparent); transform: translateY(100%); transition: transform .3s; }
-.momento:hover span, .momento:focus-visible span { transform: none; }
+.momento .momento-leg { position: absolute; left: 0; right: 0; bottom: 0; padding: 30px 16px 14px; font-size: 14px; font-weight: 600; background: linear-gradient(0deg, rgba(2,20,68,.9), transparent); transform: translateY(100%); transition: transform .3s; }
+.momento:hover .momento-leg, .momento:focus-visible .momento-leg { transform: none; }
 .momento .selo-ilus { right: 10px; top: 10px; }
 
 /* cartões que inclinam acompanhando o mouse (o JS define --rx e --ry) */
@@ -375,3 +375,7 @@ p { margin: 0 0 1em; }
   .titulo-caixas .letra { animation: none; }
   .titulo-grande .palavra > i { transform: none; }
 }
+
+/* créditos das fotos de banco de imagens */
+.creditos { font-size: 12.5px; color: var(--mudo); max-width: 90ch; }
+.creditos a { color: var(--tinta-2); }

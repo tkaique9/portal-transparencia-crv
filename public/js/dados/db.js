@@ -292,6 +292,18 @@ export async function evento(usuario, acao, detalhe) {
   await gravar();
 }
 
+/**
+ * Atualização feita pelo próprio sistema (sem usuário), só sobre registros de
+ * EXEMPLO — hoje, trocar as fotos da carga de exemplo numa base que já tem
+ * usuários. `alterar(dados)` mexe no documento; fica no histórico como "sistema".
+ */
+export async function atualizarExemplos(acao, alterar) {
+  const resumo = await alterar(dados);
+  registrar({ login: 'sistema', perfil: null }, acao, { titulo: resumo });
+  await gravar();
+  await limparOrfaos();
+}
+
 // ------------------------------------------------------------ arquivos
 
 /** Guarda um arquivo enviado e devolve os metadados que vão no registro. */

@@ -23,6 +23,9 @@ const TIPOS = {
   '.png': 'image/png',
   '.ico': 'image/x-icon',
   '.woff2': 'font/woff2',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
 };
 
 // Política de segurança: só scripts da própria origem (nenhum inline, nenhum

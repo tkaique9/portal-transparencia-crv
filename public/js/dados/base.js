@@ -4,7 +4,7 @@
 // carregar o sistema inteiro para mostrar os mesmos números.
 
 import * as db from './db.js';
-import { gerarExemplo, VERSAO_EXEMPLO } from './exemplo.js';
+import { gerarExemplo, VERSAO_EXEMPLO, atualizarFotosExemplo } from './exemplo.js';
 import { COLECOES } from './esquema.js';
 import { mascararDocumento } from '../util.js';
 import { anosDisponiveis } from '../calculo.js';
@@ -46,5 +46,13 @@ export async function prepararBase(aoProgresso = () => {}) {
     const doc = await gerarExemplo(aoProgresso);
     await db.substituir(doc);
     await db.limparOrfaos(); // arquivos da carga anterior, quando houve regeração
+  } else if (db.dados.config.demonstracao && (db.dados.config.versaoFotos || 0) < 3) {
+    // base de exemplo que já tem usuário (não dá para regerar): troca só as fotos de exemplo
+    aoProgresso('Atualizando as fotos de exemplo…');
+    await db.atualizarExemplos('atualizar fotos de exemplo', async d => {
+      const n = await atualizarFotosExemplo(d.colecoes.documentos);
+      d.config.versaoFotos = 3;
+      return `${n} foto(s) de banco de imagens no lugar das ilustrações`;
+    });
   }
 }

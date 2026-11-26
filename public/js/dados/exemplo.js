@@ -14,10 +14,10 @@ import { CATEGORIAS_DESPESA } from './esquema.js';
 import { documentoVazio, salvarBlob } from './db.js';
 import { iniciarPDF, rodapePDF, tabelaPDF } from '../export/exportar.js';
 import { porChave } from '../calculo.js';
-import { ilustracao } from './ilustracoes.js';
+import { imagemDaCena, LEGENDAS_EXEMPLO } from './fotos-exemplo.js';
 
 /** Sobe quando a carga muda de forma visível (ex.: ilustrações novas). Base só de exemplo é regerada. */
-export const VERSAO_EXEMPLO = 2;
+export const VERSAO_EXEMPLO = 3; // 3: fotos de banco de imagens no lugar das ilustrações
 
 const ULTIMO_MES = '2026-10'; // lançamentos até outubro de 2026
 const SEMENTE = 20261115;
@@ -131,6 +131,7 @@ export async function gerarExemplo(aoProgresso = () => {}) {
   const doc = documentoVazio();
   doc.config.demonstracao = true;
   doc.config.versaoExemplo = VERSAO_EXEMPLO;
+  doc.config.versaoFotos = 3; // já nasce com as fotos de banco de imagens
   const C = doc.colecoes;
   const agora = new Date().toISOString();
   const meta = (extra = {}) => ({ exemplo: true, publicacao: 'publicado', criadoEm: agora, criadoPor: 'carga-de-exemplo', atualizadoEm: agora, atualizadoPor: 'carga-de-exemplo', publicadoEm: agora, publicadoPor: 'carga-de-exemplo', ...extra });
@@ -252,7 +253,7 @@ export async function gerarExemplo(aoProgresso = () => {}) {
 
   aoProgresso('Gerando documentos em PDF…');
   await gerarDocumentos(doc, { PR, P, CT, rnd });
-  aoProgresso('Gerando fotos ilustrativas…');
+  aoProgresso('Preparando as fotos ilustrativas…');
   await gerarFotos(doc, PR);
   return doc;
 }
@@ -370,19 +371,37 @@ async function gerarDocumentos(doc, { PR, P, CT }) {
 
 // ------------------------------------------------------------ fotos
 
+/** Fotos de exemplo: banco de imagens (fotos-exemplo.js), com a ilustração de reserva. */
 async function gerarFotos(doc, PR) {
   const agora = new Date().toISOString();
-  const LEGENDAS = {
-    educar: ['Aula de reforço no contraturno', 'Formação de professores'], saude: ['Unidade móvel em atendimento', 'Ação de prevenção na comunidade'],
-    viveiro: ['Produção de mudas no viveiro', 'Plantio em área de nascente'], renda: ['Curso de panificação', 'Feira de empreendimentos'],
-    esporte: ['Turma de futsal', 'Festival esportivo'], familias: ['Grupo de convivência', 'Entrega de cestas emergenciais'],
-  };
-  for (const [k, legendas] of Object.entries(LEGENDAS)) {
+  for (const [k, legendas] of Object.entries(LEGENDAS_EXEMPLO)) {
     const p = PR[k];
     for (let i = 0; i < legendas.length; i++) {
-      const blob = await ilustracao(`${k}-${i + 1}`, legendas[i], SEMENTE + i * 97 + k.length);
-      const arquivo = await salvarBlob(blob, `${k}-${i + 1}.jpg`);
-      doc.colecoes.documentos.push({ id: novoId('doc-'), titulo: `${legendas[i]} — ${p.nome}`, categoria: 'Fotografia', exercicio: Number(p.inicio.slice(0, 4)), data: p.inicio, projetoId: p.id, descricao: 'Imagem ilustrativa gerada para a demonstração.', arquivo, restrito: false, exemplo: true, publicacao: 'publicado', criadoEm: agora, criadoPor: 'carga-de-exemplo', atualizadoEm: agora, atualizadoPor: 'carga-de-exemplo', publicadoEm: agora, publicadoPor: 'carga-de-exemplo' });
+      const img = await imagemDaCena(`${k}-${i + 1}`, legendas[i], SEMENTE + i * 97 + k.length);
+      const arquivo = await salvarBlob(img.blob, img.nome);
+      doc.colecoes.documentos.push({ id: novoId('doc-'), titulo: `${legendas[i]} — ${p.nome}`, categoria: 'Fotografia', exercicio: Number(p.inicio.slice(0, 4)), data: p.inicio, projetoId: p.id, descricao: img.descricao, fonte: img.fonte, arquivo, restrito: false, exemplo: true, publicacao: 'publicado', criadoEm: agora, criadoPor: 'carga-de-exemplo', atualizadoEm: agora, atualizadoPor: 'carga-de-exemplo', publicadoEm: agora, publicadoPor: 'carga-de-exemplo' });
     }
   }
+}
+
+/**
+ * Base de exemplo que já tem usuário (não pode ser regerada): troca só o
+ * arquivo das fotos de exemplo pelas do banco de imagens. Nada real é tocado.
+ * Devolve quantas trocou.
+ */
+export async function atualizarFotosExemplo(documentos) {
+  let n = 0;
+  for (const [k, legendas] of Object.entries(LEGENDAS_EXEMPLO)) {
+    for (let i = 0; i < legendas.length; i++) {
+      const d = documentos.find(x => x.exemplo && x.categoria === 'Fotografia' && x.titulo.startsWith(legendas[i] + ' — '));
+      if (!d) continue;
+      const img = await imagemDaCena(`${k}-${i + 1}`, legendas[i], SEMENTE + i * 97 + k.length);
+      if (!img.fonte) continue; // foto não carregou: mantém o que já está lá
+      d.arquivo = await salvarBlob(img.blob, img.nome);
+      d.descricao = img.descricao;
+      d.fonte = img.fonte;
+      n++;
+    }
+  }
+  return n;
 }

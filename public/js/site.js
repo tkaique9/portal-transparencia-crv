@@ -104,9 +104,15 @@ async function urlFoto(doc) {
   }
   return urls.get(doc.arquivo.id);
 }
-/** Ilustração da carga de exemplo (não é foto real): o corte da imagem esconde a faixa que diz isso, então a página diz. */
-const ehIlustracao = doc => !!doc && (doc.exemplo || /ilustrativ/i.test(doc.descricao || ''));
-const seloIlustracao = doc => ehIlustracao(doc) ? '<span class="selo-ilus">ilustração</span>' : '';
+/**
+ * Imagem da carga de exemplo: foto de banco de imagens (não retrata o Instituto)
+ * ou ilustração desenhada. Nenhuma das duas é foto real dos projetos, e a página
+ * diz isso em cada uma — o corte da imagem esconderia qualquer aviso dentro dela.
+ */
+const ehBanco = doc => doc?.fonte?.tipo === 'banco-de-imagens';
+const ehIlustracao = doc => !!doc && (doc.exemplo || ehBanco(doc) || /ilustrativ/i.test(doc.descricao || ''));
+const seloIlustracao = doc => !ehIlustracao(doc) ? '' : `<span class="selo-ilus">${ehBanco(doc) ? 'foto ilustrativa' : 'ilustração'}</span>`;
+const tipoImagem = doc => ehBanco(doc) ? `Foto ilustrativa (Unsplash, ${doc.fonte.autor})` : ehIlustracao(doc) ? 'Imagem ilustrativa (exemplo)' : 'Foto';
 const legendaDe = (doc, b) => {
   const nome = doc.titulo.split(' — ')[0];
   const p = b.projetos.find(x => x.id === doc.projetoId);
@@ -122,7 +128,7 @@ async function abertura(fotos, b) {
     if (!url) continue;
     const img = new Image();
     img.src = url; img.alt = '';
-    img.dataset.legenda = `${ehIlustracao(f) ? 'Imagem ilustrativa (exemplo)' : 'Foto'}: ${legendaDe(f, b)}`;
+    img.dataset.legenda = `${tipoImagem(f)}: ${legendaDe(f, b)}`;
     caixa.appendChild(img);
   }
   const imgs = $$('img', caixa);
@@ -354,7 +360,7 @@ async function momentos(fotos, b) {
   const itens = [];
   for (const f of fotos) {
     const url = await urlFoto(f);
-    if (url) itens.push(`<a class="momento" href="${portal('projetos/' + encodeURIComponent(f.projetoId))}"><img src="${url}" alt="" loading="lazy">${seloIlustracao(f)}<span>${esc(legendaDe(f, b))}</span></a>`);
+    if (url) itens.push(`<a class="momento" href="${portal('projetos/' + encodeURIComponent(f.projetoId))}"><img src="${url}" alt="" loading="lazy">${seloIlustracao(f)}<span class="momento-leg">${esc(legendaDe(f, b))}</span></a>`);
   }
   const metade = Math.ceil(itens.length / 2);
   const f1 = itens.slice(0, metade), f2 = itens.slice(metade).concat(itens.slice(0, Math.max(0, metade - (itens.length - metade))));
@@ -362,7 +368,21 @@ async function momentos(fotos, b) {
   $('#fileira-1').innerHTML = f1.join('') + f1.join('');
   $('#fileira-2').innerHTML = f2.join('') + f2.join('');
   $$('#fileira-1 a, #fileira-2 a').slice(f1.length).forEach(a => a.setAttribute('tabindex', '-1'));
-  if (fotos.every(ehIlustracao)) $('#momentos-sub').textContent = 'Por enquanto, imagens ilustrativas da demonstração: as fotos reais entram pelo portal (Documentos → Fotografia) e aparecem aqui sozinhas.';
+  if (fotos.every(ehIlustracao)) $('#momentos-sub').textContent = 'Por enquanto, fotos ilustrativas de banco de imagens: não retratam o Instituto. As fotos reais entram pelo portal (Documentos → Fotografia) e aparecem aqui sozinhas.';
+}
+
+/** Rodapé: crédito de cada foto de banco de imagens em uso (licença Unsplash — o crédito é cortesia, mas é o certo). */
+function creditos(fotos) {
+  // um crédito por autor, com um link para cada foto dele
+  const porAutor = new Map();
+  for (const f of fotos) if (ehBanco(f)) {
+    const urlsAutor = porAutor.get(f.fonte.autor) || [];
+    if (!urlsAutor.includes(f.fonte.url)) urlsAutor.push(f.fonte.url);
+    porAutor.set(f.fonte.autor, urlsAutor);
+  }
+  if (!porAutor.size) return;
+  const links = [...porAutor].map(([autor, us]) => `${esc(autor)} (${us.map((u, i) => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">foto${us.length > 1 ? ' ' + (i + 1) : ''}</a>`).join(', ')})`).join(' · ');
+  $('#creditos').innerHTML = `Fotos ilustrativas (não retratam o Instituto): <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer">Unsplash</a> — ${links}.`;
 }
 
 // ------------------------------------------------------------ início
@@ -390,6 +410,7 @@ async function iniciar() {
   const ind = calc.indicadores(b, null);
   const fotos = b.documentos.filter(d => d.categoria === 'Fotografia' && d.arquivo?.tipo?.startsWith('image/'));
   cartaoAbertura(b, ind);
+  creditos(fotos);
   circulos(b, ind);
   parceiros(b);
   await Promise.all([abertura(fotos, b), areas(b, fotos), projetos(b, fotos), momentos(fotos, b)]);

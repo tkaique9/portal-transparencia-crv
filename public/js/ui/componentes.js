@@ -167,6 +167,8 @@ const legendaFoto = d => d.titulo.split(' — ')[0];
  */
 export function carrossel(fotos, { selos = '', vazio = 'Sem fotos publicadas' } = {}) {
   if (!fotos.length) return `<div class="carrossel"><div class="vazio" style="height:100%;display:grid;place-items:center">${esc(vazio)}</div>${selos ? `<div class="selos">${selos}</div>` : ''}</div>`;
+  // foto de banco de imagens ou ilustração dos dados de exemplo: não é foto do projeto, e o cartão diz
+  if (fotos.some(f => f.exemplo || f.fonte?.tipo === 'banco-de-imagens')) selos += '<span class="selo alerta">foto ilustrativa</span>';
   return `<div class="carrossel" data-carrossel="${esc(fotos.map(f => f.id).join(','))}" data-i="0">
     <div class="trilho">${fotos.map(f => `<img data-foto="${esc(f.id)}" src="${PIXEL}" alt="${esc(legendaFoto(f))}" loading="lazy">`).join('')}</div>
     ${selos ? `<div class="selos">${selos}</div>` : ''}
